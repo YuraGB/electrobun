@@ -38,7 +38,7 @@ const mainWindow = new BrowserWindow({
 		x: 100,
 		y: 100,
 	},
-	renderer: "native",
+	renderer: "cef",
 	url,
 	frame: {
 		width: 900,

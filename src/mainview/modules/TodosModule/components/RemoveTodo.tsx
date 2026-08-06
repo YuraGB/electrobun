@@ -1,4 +1,5 @@
-import { TTodo } from "./List";
+import { Button } from "@/components/ui/button";
+import type { TTodo } from "./List";
 
 export const RemoveTodo = ({
 	todo,
@@ -8,12 +9,16 @@ export const RemoveTodo = ({
 	onRemove: () => void;
 }) => {
 	return (
-		<button
+		<Button
+			variant="destructive"
+			size="sm"
 			type="button"
 			onClick={onRemove}
-			className="bg-red-500 text-white p-2"
+			className={
+				"bg-destructive text-destructive-foreground hover:bg-destructive/10 hover:cursor-pointer"
+			}
 		>
 			Remove todo
-		</button>
+		</Button>
 	);
 };

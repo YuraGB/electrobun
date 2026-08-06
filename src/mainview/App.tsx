@@ -7,7 +7,7 @@ export const queryClient = new QueryClient();
 function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
-			<article className="flex min-h-screen flex-col items-center justify-center py-2">
+			<article className="flex min-h-screen bg-white flex-col items-center justify-center py-2">
 				<Outlet />
 				<ExplosionCanvas />
 			</article>

@@ -1,11 +1,17 @@
+import { Button } from "@/components/ui/button";
+
 export const EditButton = ({ onClick }: { onClick: () => void }) => {
 	return (
-		<button
+		<Button
+			variant="secondary"
+			size="sm"
 			type="button"
 			onClick={onClick}
-			className="bg-yellow-500 text-white p-2"
+			className={
+				"bg-warning text-destructive-foreground hover:bg-warning/40 hover:cursor-pointer"
+			}
 		>
 			Edit todo
-		</button>
+		</Button>
 	);
 };

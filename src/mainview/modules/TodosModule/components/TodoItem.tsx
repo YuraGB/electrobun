@@ -1,4 +1,12 @@
 import type { ReactNode } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Field, FieldGroup } from "@/components/ui/field";
+import {
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemTitle,
+} from "@/components/ui/item";
 import { useTodosActions } from "../hooks/useTodosActions";
 import { EditButton } from "./EditButton";
 import { EditTodo } from "./EditTodo";
@@ -38,35 +46,46 @@ export const TodoItem = ({ todo }: { todo: TTodo }): ReactNode => {
 
 	if (!isEditing && !isDeleting && !isUpdating) {
 		todoItem = (
-			<>
-				<input
-					type="checkbox"
-					checked={todo.completed}
-					onChange={() =>
-						updateTodoMutation({
-							id: todo.id,
-							updatedTodo: { completed: !todo.completed },
-						})
-					}
-				/>
-				<span className="flex-1 text-left items-center align-middle text-lg">
-					{todo.completed && <s> {todo.title} </s>}
-					{!todo.completed && <span> {todo.title} </span>}
-				</span>
-				<section className="flex space-x-2">
+			<Item variant="outline" className="w-full">
+				<ItemContent title="todo title">
+					<FieldGroup className="mx-auto w-56">
+						<Field orientation="horizontal" data-invalid>
+							<Checkbox
+								id={String(todo.id)}
+								name={todo.title}
+								aria-invalid
+								className={"size-6 max-w-6 min-w-6 max-h-6 min-h-6"}
+								checked={todo.completed}
+								onClick={() =>
+									updateTodoMutation({
+										id: todo.id,
+										updatedTodo: { completed: !todo.completed },
+									})
+								}
+							/>
+							<ItemTitle className="text-left pl-2">
+								<span>
+									{todo.completed && <s> {todo.title} </s>}
+									{!todo.completed && <span> {todo.title} </span>}
+								</span>
+							</ItemTitle>
+						</Field>
+					</FieldGroup>
+				</ItemContent>
+				<ItemActions title="todo actions" className="flex flex-col p-2">
 					<RemoveTodo
 						todo={todo}
 						onRemove={() => deleteTodoMutation(todo.id)}
 					/>
 					<EditButton onClick={() => setIsEditing((st) => !st)} />
-				</section>
-			</>
+				</ItemActions>
+			</Item>
 		);
 	}
 
 	return (
-		<li className="flex w-full justify-between items-center space-x-2 mb-2 p-2 border rounded-md shadow-sm hover:shadow-md transition-shadow duration-300">
-			{todoItem}
+		<li className="flex justify-center">
+			<div className="flex w-full max-w-md flex-col gap-2">{todoItem}</div>
 		</li>
 	);
 };
