@@ -3,6 +3,11 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/roboto";
 @import "@fontsource-variable/jetbrains-mono";
+@source "../components";
+@source "../routes";
+@source "../lib";
+@source "../hooks";
+@source "../mainview";
 
 @custom-variant dark (&:is(.dark *));
 @theme inline {

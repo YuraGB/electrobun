@@ -1,29 +1,45 @@
-import { Label } from "@/components/ui/label";
+import {
+	Field,
+	FieldContent,
+	FieldLabel,
+	FieldTitle,
+} from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import type { TAuthForm } from "../types";
 
 export const AuthSwitcher = ({
-	value,
+	value = "login",
 	onChange,
 }: {
-	value: "login" | "register";
-	onChange: (value: "login" | "register") => void;
+	value: TAuthForm;
+	onChange: (value: TAuthForm) => void;
 }) => {
 	return (
 		<article>
 			<section>
 				<RadioGroup
-					defaultValue={value}
-					onValueChange={(val) => onChange(val as "login" | "register")}
-					className="flex flex-row gap-4"
+					value={value}
+					onValueChange={onChange}
+					className="flex flex-row gap-2"
 				>
-					<div className="flex items-center gap-2">
-						<RadioGroupItem value="login" id="login" />
-						<Label htmlFor="login">Login</Label>
-					</div>
-					<div className="flex items-center gap-2">
-						<RadioGroupItem value="register" id="register" />
-						<Label htmlFor="register">Register</Label>
-					</div>
+					<FieldLabel htmlFor="login" className="h-9">
+						<Field orientation="horizontal">
+							<FieldContent>
+								<FieldTitle>Login in</FieldTitle>
+							</FieldContent>
+							<RadioGroupItem value="login" id="login" hidden />
+						</Field>
+					</FieldLabel>
+					<FieldLabel htmlFor="registration" className="h-9 w-autpfiit flex">
+						<Field orientation="horizontal" className="w-auto flex">
+							<FieldContent className="w-auto flex">
+								<FieldTitle className="w-auto flex size-max">
+									Create account
+								</FieldTitle>
+							</FieldContent>
+							<RadioGroupItem value="registration" id="registration" hidden />
+						</Field>
+					</FieldLabel>
 				</RadioGroup>
 			</section>
 		</article>

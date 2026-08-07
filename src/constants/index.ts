@@ -18,3 +18,4 @@ if (!databaseUrl) {
 export const DB_URL = databaseUrl;
 export const IS_DEV = process.env.NODE_ENV === "development";
 export const MIGRATIONS_DIR = join(appDirectory, "drizzle");
+export const ELYSIA_PORT = process.env.ELYSIA_PORT || 3001;

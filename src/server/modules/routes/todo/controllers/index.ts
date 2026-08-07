@@ -1,3 +1,4 @@
+import type { TDBTodo } from "@/server/modules/db/types";
 import {
 	createTodoInDatabase,
 	deleteTodoFromDatabase,
@@ -5,13 +6,15 @@ import {
 	updateTodoInDatabase,
 } from "../services";
 
-export const getTodosController = async (userId: string) => {
+export const getTodosController = async (
+	userId: string,
+): Promise<TDBTodo[]> => {
 	if (!userId || typeof userId !== "string") {
 		throw new Error("User ID not found in cookies");
 	}
 	// Fetch todos from the database for the given userId
 	const todos = await fetchTodosFromDatabase(userId);
-	return todos;
+	return todos ?? [];
 };
 
 export const createTodoController = async (todoData: {
