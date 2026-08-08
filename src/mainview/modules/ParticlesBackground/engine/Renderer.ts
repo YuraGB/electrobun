@@ -23,20 +23,30 @@ export class Renderer {
 		this.resize();
 	}
 
-	drawCircle(x: number, y: number, radius: number, color = "#fff", alpha = 1) {
-		this.ctx.save();
+	drawCircle(
+		x: number,
+		y: number,
+		radius: number,
+		color = "#ffffff",
+		alpha = 1,
+	) {
+		const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
+
+		gradient.addColorStop(0, color);
+
+		gradient.addColorStop(0.4, color);
+
+		gradient.addColorStop(1, "transparent");
 
 		this.ctx.globalAlpha = alpha;
 
 		this.ctx.beginPath();
-
 		this.ctx.arc(x, y, radius, 0, Math.PI * 2);
 
-		this.ctx.fillStyle = color;
-
+		this.ctx.fillStyle = gradient;
 		this.ctx.fill();
 
-		this.ctx.restore();
+		this.ctx.globalAlpha = 1;
 	}
 
 	resize() {

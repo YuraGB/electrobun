@@ -1,5 +1,5 @@
 export const Config = {
-	background: "#07090f",
+	background: "#111111",
 
 	fpsLimit: 60,
 

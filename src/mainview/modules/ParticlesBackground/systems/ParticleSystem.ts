@@ -1,5 +1,6 @@
 import type { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
+import { Vector2 } from "../math/Vector2";
 import type { Particle } from "../particles/Particle";
 import type { ParticlePool } from "../particles/ParticlePool";
 
@@ -10,13 +11,15 @@ export class ParticleSystem implements System {
 				Math.random() * window.innerWidth,
 				Math.random() * window.innerHeight,
 			);
-			particle.velocity.set(
-				(Math.random() - 0.5) * 20,
-				(Math.random() - 0.5) * 20,
-			);
-			particle.radius = Math.random() * 2 + 1;
+			const speed = 10 + particle.depth * 20;
 
-			particle.alpha = Math.random() * 0.5 + 0.5;
+			const direction = Vector2.random();
+
+			particle.velocity.copy(direction).multiplyScalar(speed);
+			particle.radius = Math.random() * 4 + 1;
+			particle.depth = Math.random() * 0.8 + 0.2;
+
+			particle.alpha = particle.depth * 0.7 + 0.3;
 		}
 	}
 
@@ -52,12 +55,17 @@ export class ParticleSystem implements System {
 
 	render(context: EngineContext) {
 		for (const particle of this.pool.particles) {
+			const parallax = 0.2 + particle.depth * 0.8;
+			const screen = context.camera.worldToScreen(particle.position, parallax);
+			const alpha =
+				particle.alpha *
+				(0.8 + Math.sin(context.time.elapsed + particle.twinkleOffset) * 0.2);
 			context.renderer.drawCircle(
-				particle.position.x,
-				particle.position.y,
+				screen.x,
+				screen.y,
 				particle.radius,
-				"#ffffff",
-				particle.alpha,
+				"#fff",
+				alpha,
 			);
 		}
 	}

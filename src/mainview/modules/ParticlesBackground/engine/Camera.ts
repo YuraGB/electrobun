@@ -7,13 +7,16 @@ export class Camera {
 
 	zoom = 1;
 
-	smoothness = 0.08;
+	smoothness = 0.02;
 
 	update() {
-		this.position.lerp(this.target, 0.05);
+		this.position.lerp(this.target, 0.03);
 	}
 
-	worldToScreen(point: Vector2): Vector2 {
-		return point.clone().sub(this.position).multiplyScalar(this.zoom);
+	worldToScreen(point: Vector2, parallax = 1): Vector2 {
+		return point
+			.clone()
+			.sub(this.position.clone().multiplyScalar(parallax))
+			.multiplyScalar(this.zoom);
 	}
 }
