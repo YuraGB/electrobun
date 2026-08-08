@@ -7,9 +7,11 @@ import {
 	getTodosController,
 	updateTodoController,
 } from "./controllers";
+import { todoSchema } from "./validation";
 
 export const todoRoutes = new Elysia({
 	name: "todo-routes",
+	aot: true,
 })
 	.use(authPlugin)
 	.get(
@@ -18,21 +20,11 @@ export const todoRoutes = new Elysia({
 			if (!user?.id) {
 				throw new Error("User not authenticated");
 			}
-			// Fetch todos from the database for the given userId
-			return await getTodosController(user.id);
+			const todos = await getTodosController(user.id);
+			return todos;
 		},
 		{
-			response: z.array(
-				z.object({
-					id: z.number(),
-					title: z.string(),
-					description: z.string().nullable(),
-					completed: z.boolean().nullable(),
-					createdAt: z.date(),
-					updatedAt: z.date(),
-					userId: z.number(),
-				}),
-			),
+			response: z.array(todoSchema),
 		},
 	)
 	.post(
@@ -50,15 +42,7 @@ export const todoRoutes = new Elysia({
 			body: z.object({
 				title: z.string().min(1, "Title is required"),
 			}),
-			response: z.object({
-				id: z.number(),
-				title: z.string(),
-				description: z.string().nullable(),
-				completed: z.boolean().nullable(),
-				createdAt: z.date(),
-				updatedAt: z.date(),
-				userId: z.number(),
-			}),
+			response: todoSchema,
 		},
 	)
 	.put(
@@ -68,33 +52,14 @@ export const todoRoutes = new Elysia({
 				throw new Error("User not authenticated");
 			}
 
-			if (user.id !== body.userId) {
+			if (Number(user.id) !== Number(body.userId)) {
 				throw new Error("User not authorized to update this todo");
 			}
-			// Update a todo
-			return await updateTodoController({
-				id: body.id,
-				title: body.title,
-				completed: body.completed,
-				userId: user.id,
-			});
+			return await updateTodoController(body);
 		},
 		{
-			body: z.object({
-				title: z.string().min(1, "Title is required"),
-				completed: z.boolean(),
-				userId: z.string(),
-				id: z.string(),
-			}),
-			response: z.object({
-				id: z.number(),
-				title: z.string(),
-				description: z.string().nullable(),
-				completed: z.boolean().nullable(),
-				createdAt: z.date(),
-				updatedAt: z.date(),
-				userId: z.number(),
-			}),
+			body: todoSchema,
+			response: todoSchema,
 		},
 	)
 	.delete(
@@ -103,8 +68,7 @@ export const todoRoutes = new Elysia({
 			if (!user?.id) {
 				throw new Error("User not authenticated");
 			}
-			// Delete a todo from the database
-			// body.id is a string per the route schema, pass it through as-is
+
 			return await deleteTodoController(body.id);
 		},
 		{

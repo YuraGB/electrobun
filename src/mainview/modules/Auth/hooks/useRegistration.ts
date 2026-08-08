@@ -1,6 +1,5 @@
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { safeJsonParse } from "@/utils/asyncHelpers";
 import { logger } from "@/utils/frontend_logger";
 import { authClient } from "../lib/auth-client";
 

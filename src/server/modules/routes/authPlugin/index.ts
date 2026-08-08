@@ -6,7 +6,6 @@ export const authPlugin = new Elysia({ name: "auth-plugin" })
 		const session = await auth.api.getSession({
 			headers: request.headers,
 		});
-
 		return {
 			session,
 			user: session?.user ?? null,

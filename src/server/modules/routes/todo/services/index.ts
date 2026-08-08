@@ -3,6 +3,7 @@ import { tryCatch } from "../../../../../utils/asyncHelpers";
 import { logger } from "../../../../../utils/frontend_logger";
 import { db } from "../../../db";
 import { todoTable } from "../../../db/schemas/todoSchema";
+import type { TTodoDTO } from "../controllers/types";
 
 export const fetchTodosFromDatabase = async (userId: string) => {
 	const { data, error } = await tryCatch(
@@ -32,6 +33,7 @@ export const createTodoInDatabase = async (todoData: {
 				.values({
 					userId: Number(todoData.userId),
 					title: todoData.title,
+					completed: false,
 				})
 				.returning(),
 	);
@@ -48,12 +50,7 @@ export const createTodoInDatabase = async (todoData: {
 	return data[0]; // Return the newly created todo
 };
 
-export const updateTodoInDatabase = async (todoData: {
-	id: string;
-	title?: string;
-	completed?: boolean;
-	userId: string;
-}) => {
+export const updateTodoInDatabase = async (todoData: TTodoDTO) => {
 	const { data, error } = await tryCatch(
 		async () =>
 			await db

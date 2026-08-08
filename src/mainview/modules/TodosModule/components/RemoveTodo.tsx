@@ -1,13 +1,6 @@
 import { Button } from "@/components/ui/button";
-import type { TTodo } from "./List";
 
-export const RemoveTodo = ({
-	todo,
-	onRemove,
-}: {
-	todo: TTodo;
-	onRemove: () => void;
-}) => {
+export const RemoveTodo = ({ onRemove }: { onRemove: () => void }) => {
 	return (
 		<Button
 			variant="destructive"

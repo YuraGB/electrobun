@@ -7,13 +7,13 @@ import {
 	ItemContent,
 	ItemTitle,
 } from "@/components/ui/item";
+import type { TTodoDTO } from "@/server/modules/routes/todo/controllers/types";
 import { useTodosActions } from "../hooks/useTodosActions";
 import { EditButton } from "./EditButton";
 import { EditTodo } from "./EditTodo";
-import type { TTodo } from "./List";
 import { RemoveTodo } from "./RemoveTodo";
 
-export const TodoItem = ({ todo }: { todo: TTodo }): ReactNode => {
+export const TodoItem = ({ todo }: { todo: TTodoDTO }): ReactNode => {
 	const {
 		deleteTodoMutation,
 		isDeleting,
@@ -29,11 +29,8 @@ export const TodoItem = ({ todo }: { todo: TTodo }): ReactNode => {
 			<EditTodo
 				todo={todo}
 				isEditing={isUpdating}
-				onSave={() => {
-					updateTodoMutation({
-						id: todo.id,
-						updatedTodo: { title: todo.title },
-					});
+				onSave={(t) => {
+					updateTodoMutation(t);
 					setIsEditing(false);
 				}}
 			/>
@@ -54,13 +51,13 @@ export const TodoItem = ({ todo }: { todo: TTodo }): ReactNode => {
 								id={String(todo.id)}
 								name={todo.title}
 								className={"size-6 max-w-6 min-w-6 max-h-6 min-h-6"}
-								checked={todo.completed}
-								onClick={() =>
+								checked={todo.completed ?? false}
+								onCheckedChange={(checked) => {
 									updateTodoMutation({
-										id: todo.id,
-										updatedTodo: { completed: !todo.completed },
-									})
-								}
+										...todo,
+										completed: checked,
+									});
+								}}
 							/>
 							<ItemTitle className="text-left pl-2">
 								<span className={"text-lg"}>
@@ -72,10 +69,7 @@ export const TodoItem = ({ todo }: { todo: TTodo }): ReactNode => {
 					</FieldGroup>
 				</ItemContent>
 				<ItemActions title="todo actions" className="flex flex-col p-2">
-					<RemoveTodo
-						todo={todo}
-						onRemove={() => deleteTodoMutation(todo.id)}
-					/>
+					<RemoveTodo onRemove={() => deleteTodoMutation(String(todo.id))} />
 					<EditButton onClick={() => setIsEditing((st) => !st)} />
 				</ItemActions>
 			</Item>

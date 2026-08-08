@@ -24,6 +24,10 @@ export const auth = betterAuth({
 			verification,
 		},
 	}),
+	session: {
+		expiresIn: 60 * 60 * 24 * 30, // 30 днів
+		updateAge: 60 * 60 * 24, // оновлювати раз на день
+	},
 	emailAndPassword: {
 		enabled: true,
 	},

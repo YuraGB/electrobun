@@ -1,14 +1,14 @@
 import { useState } from "react";
-import type { TTodo } from "./List";
+import type { TTodoDTO } from "@/server/modules/routes/todo/controllers/types";
 
 export const EditTodo = ({
 	todo,
 	onSave,
 	isEditing,
 }: {
-	todo: TTodo;
+	todo: TTodoDTO;
 	isEditing: boolean;
-	onSave: (updatedTodo: TTodo) => void;
+	onSave: (updatedTodo: TTodoDTO) => void;
 }) => {
 	const [title, setTitle] = useState(todo.title);
 

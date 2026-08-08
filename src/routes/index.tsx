@@ -1,8 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { AuthModule } from "@/mainview/modules/Auth";
-import { Todos } from "../mainview/modules/TodosModule";
+import { authClient } from "@/mainview/modules/Auth/lib/auth-client";
 
 export const Route = createFileRoute("/")({
-	// component: Todos,
+	beforeLoad: async () => {
+		const session = await authClient.getSession();
+		if (session.data?.user.id) {
+			throw redirect({ to: "/todos" });
+		}
+	},
 	component: AuthModule,
 });

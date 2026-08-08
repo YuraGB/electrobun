@@ -1,4 +1,7 @@
 import { BETER_AUTH_BASE_URL } from "@/constants/shared";
+import type { TDBTodo } from "@/server/modules/db/types";
+import { TTodoDTO } from "@/server/modules/routes/todo/controllers/types";
+import { logger } from "@/utils/frontend_logger";
 
 export const getTodos = async () => {
 	const response = await fetch(`${BETER_AUTH_BASE_URL}/todos`, {
@@ -26,11 +29,10 @@ export const addTodo = async (title: string) => {
 	return response.json();
 };
 
-export const updateTodo = async (
-	updatedTodo: Partial<{ title: string; completed: boolean }>,
-) => {
+export const updateTodo = async (updatedTodo: TTodoDTO) => {
 	const response = await fetch(`${BETER_AUTH_BASE_URL}/todo`, {
 		method: "PUT",
+		credentials: "include",
 		headers: {
 			"Content-Type": "application/json",
 		},
@@ -42,13 +44,17 @@ export const updateTodo = async (
 	return response.json();
 };
 
-export const deleteTodo = async (id: number) => {
-	const response = await fetch(
-		`https://jsonplaceholder.typicode.com/todos/${id}`,
-		{
-			method: "DELETE",
+export const deleteTodo = async (id: string) => {
+	const response = await fetch(`${BETER_AUTH_BASE_URL}/todo`, {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
 		},
-	);
+		credentials: "include",
+		body: JSON.stringify({
+			id,
+		}),
+	});
 	if (!response.ok) {
 		throw new Error("Failed to delete todo");
 	}

@@ -10,7 +10,6 @@ export const useLogin = () => {
 			password: "",
 		},
 		onSubmit: async ({ value }) => {
-			// Do something with form data
 			const { email, password } = value;
 			await authClient.signIn.email(
 				{
