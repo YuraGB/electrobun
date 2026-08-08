@@ -4,6 +4,7 @@ import { Camera } from "./Camera";
 import { Mouse } from "./Mouse";
 import { Renderer } from "./Renderer";
 import { Time } from "./Time";
+import { Wind } from "./Wind";
 
 export class Engine {
 	readonly renderer: Renderer;
@@ -11,7 +12,7 @@ export class Engine {
 	private readonly context: EngineContext;
 	readonly camera = new Camera();
 	readonly mouse = new Mouse();
-
+	readonly wind = new Wind();
 	readonly time = new Time();
 
 	private frame = 0;
@@ -24,6 +25,7 @@ export class Engine {
 			time: this.time,
 			camera: this.camera,
 			mouse: this.mouse,
+			wind: this.wind,
 		};
 
 		window.addEventListener("resize", () => this.renderer.resize());
@@ -60,7 +62,6 @@ export class Engine {
 		);
 
 		this.camera.update();
-
 		for (const system of this.systems) {
 			system.update(this.context);
 		}
@@ -72,5 +73,6 @@ export class Engine {
 		for (const system of this.systems) {
 			system.render(this.context);
 		}
+		this.renderer.drawText(`FPS: ${this.time.fps}`, 20, 30);
 	}
 }

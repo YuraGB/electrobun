@@ -74,6 +74,11 @@ export class Renderer {
 		this.ctx.setTransform(Config.pixelRatio, 0, 0, Config.pixelRatio, 0, 0);
 	}
 
+	drawText(text: string, x: number, y: number) {
+		this.ctx.fillStyle = "#fff";
+		this.ctx.font = "14px monospace";
+		this.ctx.fillText(text, x, y);
+	}
 	clear() {
 		this.ctx.fillStyle = Config.background;
 

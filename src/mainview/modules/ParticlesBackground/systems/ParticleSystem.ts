@@ -1,6 +1,5 @@
 import type { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
-import { Vector2 } from "../math/Vector2";
 import type { Particle } from "../particles/Particle";
 import { horizontalBand } from "../particles/ParticleDistribution";
 import type { ParticlePool } from "../particles/ParticlePool";
@@ -13,11 +12,9 @@ export class ParticleSystem implements System {
 			particle.position.copy(position);
 
 			particle.depth = Math.pow(Math.random(), 3);
-			const speed = 3 + particle.depth * 6;
+			const speed = 1 + particle.depth * 2;
 
-			const direction = Vector2.random();
-
-			particle.velocity.copy(direction).multiplyScalar(speed);
+			particle.velocity.set(speed, this.randomGaussian() * 0.5);
 			const t = particle.depth;
 
 			if (t < 0.7) {
@@ -33,8 +30,10 @@ export class ParticleSystem implements System {
 
 	update(context: EngineContext) {
 		for (const particle of this.pool.particles) {
-			particle.position.addScaled(particle.velocity, context.time.delta);
+			const windY = context.wind.getY(particle, context.time);
+			particle.position.y += windY * context.time.delta;
 
+			particle.position.addScaled(particle.velocity, context.time.delta);
 			this.wrapParticle(
 				particle,
 				context.renderer.width,
