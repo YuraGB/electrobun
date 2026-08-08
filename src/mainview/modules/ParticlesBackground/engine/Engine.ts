@@ -1,4 +1,4 @@
-import { EngineContext } from "../core/EngineContext";
+import type { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
 import { Camera } from "./Camera";
 import { Mouse } from "./Mouse";
@@ -15,6 +15,7 @@ export class Engine {
 	readonly time = new Time();
 
 	private frame = 0;
+	private readonly mouseInfluence = 0.03;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.renderer = new Renderer(canvas);
@@ -51,13 +52,15 @@ export class Engine {
 	};
 
 	private update() {
-		this.camera.target.set(
-			(this.context.mouse.position.x - this.renderer.width / 2) * 0.03,
-
-			(this.context.mouse.position.y - this.renderer.height / 2) * 0.03,
-		);
-		this.camera.update();
 		this.mouse.update();
+
+		this.camera.target.set(
+			(this.mouse.position.x - this.renderer.width / 2) * this.mouseInfluence,
+			(this.mouse.position.y - this.renderer.height / 2) * this.mouseInfluence,
+		);
+
+		this.camera.update();
+
 		for (const system of this.systems) {
 			system.update(this.context);
 		}
