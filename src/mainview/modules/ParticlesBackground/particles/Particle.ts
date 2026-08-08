@@ -7,6 +7,5 @@ export class Particle {
 	depth = 1;
 	twinkleOffset = Math.random() * Math.PI * 2;
 	radius = 2;
-
 	alpha = 1;
 }

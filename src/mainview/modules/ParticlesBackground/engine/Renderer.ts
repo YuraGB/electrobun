@@ -32,11 +32,10 @@ export class Renderer {
 	) {
 		const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
 
-		gradient.addColorStop(0, color);
-
-		gradient.addColorStop(0.4, color);
-
-		gradient.addColorStop(1, "transparent");
+		gradient.addColorStop(0.0, color);
+		gradient.addColorStop(0.15, color);
+		gradient.addColorStop(0.45, "rgba(255,255,255,0.35)");
+		gradient.addColorStop(1.0, "transparent");
 
 		this.ctx.globalAlpha = alpha;
 
@@ -45,6 +44,15 @@ export class Renderer {
 
 		this.ctx.fillStyle = gradient;
 		this.ctx.fill();
+
+		this.ctx.globalAlpha = 1;
+	}
+
+	drawPoint(x: number, y: number, color = "#ffffff", alpha = 1) {
+		this.ctx.globalAlpha = alpha;
+		this.ctx.fillStyle = color;
+
+		this.ctx.fillRect(x, y, 1, 1);
 
 		this.ctx.globalAlpha = 1;
 	}

@@ -2,23 +2,31 @@ import type { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
 import { Vector2 } from "../math/Vector2";
 import type { Particle } from "../particles/Particle";
+import { horizontalBand } from "../particles/ParticleDistribution";
 import type { ParticlePool } from "../particles/ParticlePool";
 
 export class ParticleSystem implements System {
 	constructor(private readonly pool: ParticlePool) {
 		for (const particle of this.pool.particles) {
-			particle.position.set(
-				Math.random() * window.innerWidth,
-				Math.random() * window.innerHeight,
-			);
-			particle.depth = Math.random() * 0.8 + 0.2;
+			const position = horizontalBand(window.innerWidth, window.innerHeight);
+
+			particle.position.copy(position);
+
+			particle.depth = Math.pow(Math.random(), 3);
 			const speed = 3 + particle.depth * 6;
 
 			const direction = Vector2.random();
 
 			particle.velocity.copy(direction).multiplyScalar(speed);
-			particle.radius = 1 + particle.depth * 3;
+			const t = particle.depth;
 
+			if (t < 0.7) {
+				particle.radius = 1;
+			} else if (t < 0.95) {
+				particle.radius = 2;
+			} else {
+				particle.radius = 4 + Math.random() * 3;
+			}
 			particle.alpha = particle.depth * 0.7 + 0.3;
 		}
 	}
@@ -34,25 +42,39 @@ export class ParticleSystem implements System {
 			);
 		}
 	}
+	private respawnParticle(particle: Particle, width: number, height: number) {
+		const margin = 50;
+
+		particle.position.x = -margin;
+
+		const position = horizontalBand(width, height);
+
+		particle.position.y = position.y;
+	}
 
 	private wrapParticle(particle: Particle, width: number, height: number) {
 		const margin = 50;
 
-		if (particle.position.x < -margin) {
-			particle.position.x = width + margin;
-		}
-
 		if (particle.position.x > width + margin) {
-			particle.position.x = -margin;
+			this.respawnParticle(particle, width, height);
 		}
+	}
 
-		if (particle.position.y < -margin) {
-			particle.position.y = height + margin;
-		}
+	private randomY(height: number) {
+		const center = height * 0.62;
+		const spread = height * 0.08;
 
-		if (particle.position.y > height + margin) {
-			particle.position.y = -margin;
-		}
+		return center + this.randomGaussian() * spread;
+	}
+
+	private randomGaussian() {
+		let u = 0;
+		let v = 0;
+
+		while (u === 0) u = Math.random();
+		while (v === 0) v = Math.random();
+
+		return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 	}
 
 	render(context: EngineContext) {
