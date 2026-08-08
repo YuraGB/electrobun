@@ -65,7 +65,18 @@ export class Vector2 {
 
 		return this;
 	}
+	addScaled(v: Vector2, scalar: number): this {
+		this.x += v.x * scalar;
+		this.y += v.y * scalar;
 
+		return this;
+	}
+	zero(): this {
+		this.x = 0;
+		this.y = 0;
+
+		return this;
+	}
 	distanceTo(v: Vector2): number {
 		return Math.hypot(this.x - v.x, this.y - v.y);
 	}

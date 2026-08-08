@@ -3,7 +3,7 @@ import { Config } from "./Config";
 export class Renderer {
 	readonly canvas: HTMLCanvasElement;
 
-	readonly ctx: CanvasRenderingContext2D;
+	private readonly ctx: CanvasRenderingContext2D;
 
 	width = 0;
 
@@ -23,18 +23,36 @@ export class Renderer {
 		this.resize();
 	}
 
+	drawCircle(x: number, y: number, radius: number, color = "#fff", alpha = 1) {
+		this.ctx.save();
+
+		this.ctx.globalAlpha = alpha;
+
+		this.ctx.beginPath();
+
+		this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+
+		this.ctx.fillStyle = color;
+
+		this.ctx.fill();
+
+		this.ctx.restore();
+	}
+
 	resize() {
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
 
 		this.canvas.width = this.width * Config.pixelRatio;
-
 		this.canvas.height = this.height * Config.pixelRatio;
 
-		this.canvas.style.width = this.width + "px";
+		this.canvas.style.width = `${this.width}px`;
+		this.canvas.style.height = `${this.height}px`;
 
-		this.canvas.style.height = this.height + "px";
+		this.applyPixelRatio();
+	}
 
+	private applyPixelRatio() {
 		this.ctx.setTransform(Config.pixelRatio, 0, 0, Config.pixelRatio, 0, 0);
 	}
 

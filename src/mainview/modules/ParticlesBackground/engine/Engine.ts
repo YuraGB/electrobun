@@ -1,5 +1,7 @@
 import { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
+import { Camera } from "./Camera";
+import { Mouse } from "./Mouse";
 import { Renderer } from "./Renderer";
 import { Time } from "./Time";
 
@@ -7,6 +9,8 @@ export class Engine {
 	readonly renderer: Renderer;
 	private readonly systems: System[] = [];
 	private readonly context: EngineContext;
+	readonly camera = new Camera();
+	readonly mouse = new Mouse();
 
 	readonly time = new Time();
 
@@ -17,6 +21,8 @@ export class Engine {
 		this.context = {
 			renderer: this.renderer,
 			time: this.time,
+			camera: this.camera,
+			mouse: this.mouse,
 		};
 
 		window.addEventListener("resize", () => this.renderer.resize());
@@ -31,6 +37,7 @@ export class Engine {
 
 	stop() {
 		cancelAnimationFrame(this.frame);
+		this.mouse.destroy();
 	}
 
 	private loop = () => {
@@ -44,6 +51,13 @@ export class Engine {
 	};
 
 	private update() {
+		this.camera.target.set(
+			(this.context.mouse.position.x - this.renderer.width / 2) * 0.03,
+
+			(this.context.mouse.position.y - this.renderer.height / 2) * 0.03,
+		);
+		this.camera.update();
+		this.mouse.update();
 		for (const system of this.systems) {
 			system.update(this.context);
 		}
