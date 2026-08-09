@@ -10,4 +10,12 @@ export const Config = {
 	bloom: true,
 
 	vignette: true,
+	bokeh: {
+		count: 8,
+		minRadius: 30,
+		maxRadius: 80,
+		minAlpha: 0.03,
+		maxAlpha: 0.07,
+		parallax: 2.2,
+	},
 } as const;

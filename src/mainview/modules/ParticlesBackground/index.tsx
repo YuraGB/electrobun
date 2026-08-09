@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
+import { Config } from "./engine/Config";
 import { Engine } from "./engine/Engine";
+import { BokehPool } from "./particles/BokehPool";
 import { ParticlePool } from "./particles/ParticlePool";
+import { BokehSystem } from "./systems/BokehSystem";
 import { DustSystem } from "./systems/DustSystem";
-import { GlowSystem } from "./systems/GlowSystem";
-// import { DebugSystem } from "./systems/DebugSystem";
+import { LightShaftSystem } from "./systems/LightShaftSystem";
 import { ParticleSystem } from "./systems/ParticleSystem";
 
 function ParticleBackground() {
@@ -14,9 +16,11 @@ function ParticleBackground() {
 
 		const pool = new ParticlePool(1000);
 		const engine = new Engine(canvasRef.current);
+		const bokehPool = new BokehPool(Config.bokeh.count);
 
+		engine.addSystem(new LightShaftSystem());
 		engine.addSystem(new DustSystem());
-		// engine.addSystem(new GlowSystem());
+		engine.addSystem(new BokehSystem(bokehPool));
 		engine.addSystem(new ParticleSystem(pool));
 
 		engine.start();

@@ -23,7 +23,51 @@ export class Renderer {
 		this.resize();
 	}
 
-	drawCircle(
+	drawGlow(x: number, y: number, radius: number, color = "#ffffff", alpha = 1) {
+		const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
+
+		gradient.addColorStop(0, color);
+		gradient.addColorStop(0.15, color);
+		gradient.addColorStop(0.4, "rgba(255,255,255,0.2)");
+		gradient.addColorStop(1, "transparent");
+
+		this.ctx.globalAlpha = alpha;
+		this.ctx.fillStyle = gradient;
+
+		this.ctx.beginPath();
+		this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+		this.ctx.fill();
+
+		this.ctx.globalAlpha = 1;
+	}
+
+	drawLightShaft(
+		x: number,
+		y: number,
+		width: number,
+		height: number,
+		alpha = 0.02,
+		angle = -12,
+	) {
+		this.ctx.save();
+
+		this.ctx.translate(x, y);
+		this.ctx.rotate((angle * Math.PI) / 180);
+
+		const gradient = this.ctx.createLinearGradient(-width / 2, 0, width / 2, 0);
+
+		gradient.addColorStop(0.0, "rgba(255,255,255,0)");
+		gradient.addColorStop(0.5, `rgba(255,255,255,${alpha})`);
+		gradient.addColorStop(1.0, "rgba(255,255,255,0)");
+
+		this.ctx.fillStyle = gradient;
+
+		this.ctx.fillRect(-width / 2, 0, width, height);
+
+		this.ctx.restore();
+	}
+
+	drawBokeh(
 		x: number,
 		y: number,
 		radius: number,
@@ -32,10 +76,11 @@ export class Renderer {
 	) {
 		const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
 
-		gradient.addColorStop(0.0, color);
-		gradient.addColorStop(0.15, color);
-		gradient.addColorStop(0.45, "rgba(255,255,255,0.35)");
-		gradient.addColorStop(1.0, "transparent");
+		gradient.addColorStop(0.0, "rgba(255,255,255,0.18)");
+		gradient.addColorStop(0.2, "rgba(255,255,255,0.15)");
+		gradient.addColorStop(0.45, "rgba(255,255,255,0.08)");
+		gradient.addColorStop(0.75, "rgba(255,255,255,0.03)");
+		gradient.addColorStop(1.0, "rgba(255,255,255,0)");
 
 		this.ctx.globalAlpha = alpha;
 
@@ -43,6 +88,23 @@ export class Renderer {
 		this.ctx.arc(x, y, radius, 0, Math.PI * 2);
 
 		this.ctx.fillStyle = gradient;
+		this.ctx.fill();
+
+		this.ctx.globalAlpha = 1;
+	}
+
+	drawCircle(
+		x: number,
+		y: number,
+		radius: number,
+		color = "#ffffff",
+		alpha = 1,
+	) {
+		this.ctx.globalAlpha = alpha;
+		this.ctx.fillStyle = color;
+
+		this.ctx.beginPath();
+		this.ctx.arc(x, y, radius, 0, Math.PI * 2);
 		this.ctx.fill();
 
 		this.ctx.globalAlpha = 1;

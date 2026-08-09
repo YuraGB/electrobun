@@ -90,13 +90,23 @@ export class ParticleSystem implements System {
 				) *
 					twinkleAmount;
 
-			const alpha = particle.alpha * twinkle;
+			const glowRadius = particle.radius * (2 + particle.depth * 3);
+			const glowAlpha = particle.alpha * (0.04 + particle.depth * 0.12);
+
+			context.renderer.drawGlow(
+				screen.x,
+				screen.y,
+				glowRadius,
+				"#ffffff",
+				glowAlpha,
+			);
+
 			context.renderer.drawCircle(
 				screen.x,
 				screen.y,
 				particle.radius,
-				"#fff",
-				alpha,
+				"#ffffff",
+				particle.alpha * twinkle,
 			);
 		}
 	}

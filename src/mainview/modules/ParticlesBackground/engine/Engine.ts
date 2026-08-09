@@ -69,7 +69,6 @@ export class Engine {
 
 	private render() {
 		this.renderer.clear();
-
 		for (const system of this.systems) {
 			system.render(this.context);
 		}
