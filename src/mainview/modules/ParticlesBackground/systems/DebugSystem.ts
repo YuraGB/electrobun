@@ -10,8 +10,16 @@ export class DebugSystem implements System {
 	}
 
 	render(context: EngineContext) {
-		const screen = context.camera.worldToScreen(this.position);
+		const camera = context.camera;
 
-		context.renderer.drawCircle(screen.x, screen.y, 40, "red");
+		const near = camera.worldToScreen(this.position, camera.getParallax(0.5));
+
+		const middle = camera.worldToScreen(this.position, camera.getParallax(1));
+
+		const far = camera.worldToScreen(this.position, camera.getParallax(2));
+
+		context.renderer.drawCircle(near.x, near.y, 40, "red");
+		context.renderer.drawCircle(middle.x, middle.y, 30, "green");
+		context.renderer.drawCircle(far.x, far.y, 20, "blue");
 	}
 }

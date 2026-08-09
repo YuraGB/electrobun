@@ -1,8 +1,10 @@
 import type { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
+import { Config } from "../engine/Config";
 import type { BokehParticle } from "../particles/BokehParticle";
 import type { BokehPool } from "../particles/BokehPool";
 import { horizontalBand } from "../particles/ParticleDistribution";
+import { gaussian } from "../utils/Random";
 
 export class BokehSystem implements System {
 	constructor(private readonly pool: BokehPool) {
@@ -10,12 +12,17 @@ export class BokehSystem implements System {
 			particle.position.x = Math.random() * window.innerWidth;
 			particle.position.y = Math.random() * window.innerHeight;
 			particle.depth = 0.95 + Math.random() * 0.05;
-			particle.radius = 120;
-			particle.alpha = 0.04;
+			particle.radius =
+				Config.bokeh.minRadius +
+				Math.random() * (Config.bokeh.maxRadius - Config.bokeh.minRadius);
+			particle.alpha =
+				Config.bokeh.minAlpha +
+				Math.random() * (Config.bokeh.maxAlpha - Config.bokeh.minAlpha);
 
 			particle.velocity.set(
-				0.08 + Math.random() * 0.12,
-				this.randomGaussian() * 0.02,
+				Config.bokeh.minSpeed +
+					Math.random() * (Config.bokeh.maxSpeed - Config.bokeh.minSpeed),
+				gaussian() * Config.bokeh.verticalSpeed,
 			);
 		}
 	}
@@ -64,15 +71,5 @@ export class BokehSystem implements System {
 
 			particle.position.y = position.y;
 		}
-	}
-
-	private randomGaussian() {
-		let u = 0;
-		let v = 0;
-
-		while (u === 0) u = Math.random();
-		while (v === 0) v = Math.random();
-
-		return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 	}
 }

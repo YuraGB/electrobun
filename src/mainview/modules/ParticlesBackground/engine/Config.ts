@@ -1,21 +1,62 @@
 export const Config = {
-	background: "#111111",
+	pixelRatio: window.devicePixelRatio,
+	background: "#050505",
 
-	fpsLimit: 60,
+	particles: {
+		count: 120,
+		parallaxStrength: 1,
+		minRadius: 1,
+		maxRadius: 7,
 
-	pixelRatio: Math.min(window.devicePixelRatio, 2),
+		largeRadiusMin: 4,
+		largeRadiusMax: 7,
 
-	mouseLerp: 0.08,
+		minAlpha: 0.3,
+		maxAlpha: 1,
 
-	bloom: true,
+		minSpeed: 1,
+		maxSpeed: 3,
+	},
 
-	vignette: true,
+	dust: {
+		count: 180,
+
+		minRadius: 1,
+		maxRadius: 2,
+
+		minAlpha: 0.05,
+		maxAlpha: 0.15,
+	},
+
 	bokeh: {
-		count: 8,
+		count: 6,
+
 		minRadius: 30,
 		maxRadius: 80,
+
 		minAlpha: 0.03,
 		maxAlpha: 0.07,
-		parallax: 2.2,
+
+		minSpeed: 0.08,
+		maxSpeed: 0.2,
+		verticalSpeed: 0.02,
 	},
-} as const;
+
+	lightShafts: {
+		count: 3,
+
+		positions: [0.15, 0.45, 0.72],
+		widths: [220, 180, 260],
+		alphas: [0.025, 0.018, 0.02],
+
+		offsetY: -100,
+		extraHeight: 200,
+		angle: -12,
+
+		driftSpeed: 0.08,
+		driftAmount: 4,
+
+		pulseSpeed: 0.12,
+		pulseAmount: 0.03,
+	},
+};

@@ -1,5 +1,6 @@
 import type { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
+import { Config } from "../engine/Config";
 import { DustParticle } from "../particles/DustParticle";
 import { horizontalBand } from "../particles/ParticleDistribution";
 
@@ -13,7 +14,9 @@ export class DustSystem implements System {
 
 			particle.position.copy(position);
 
-			particle.alpha = 0.02 + Math.random() * 0.06;
+			particle.alpha =
+				Config.dust.minAlpha +
+				Math.random() * (Config.dust.maxAlpha - Config.dust.minAlpha);
 
 			this.particles.push(particle);
 		}
