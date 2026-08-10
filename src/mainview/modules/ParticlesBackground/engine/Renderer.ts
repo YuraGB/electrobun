@@ -2,15 +2,27 @@ import { Config } from "./Config";
 
 export class Renderer {
 	readonly canvas: HTMLCanvasElement;
-
+	private readonly lightMask = new Image();
 	private readonly ctx: CanvasRenderingContext2D;
-
 	width = 0;
 
 	height = 0;
+	private rays: {
+		baseX: number;
+		width: number;
+		spread: number;
+		maxOpacity: number;
+		speed: number;
+		phase: number;
 
+		canFade: boolean;
+		fadeSpeed: number;
+		fadePhase: number;
+		fadeStrength: number;
+	}[] = [];
 	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
+		this.lightMask.src = "/mask.svg";
 
 		const ctx = canvas.getContext("2d");
 
@@ -18,9 +30,120 @@ export class Renderer {
 			throw new Error("Canvas2D is not supported");
 		}
 
+		this.rays = Array.from({ length: 16 }, (_, i) => ({
+			baseX: (i / 16) * this.width * 1.2 - this.width * 0.1,
+
+			width: 40 + Math.random() * 70,
+
+			spread: 1.8 + Math.random() * 0.8,
+
+			maxOpacity: 0.035 + Math.random() * 0.04,
+
+			speed: 0.00003 + Math.random() * 0.00004,
+
+			phase: Math.random() * Math.PI * 2,
+
+			// тільки дальні промені будуть зникати
+			canFade: i >= 10,
+
+			fadeSpeed: 0.00015 + Math.random() * 0.00008,
+
+			fadePhase: Math.random() * Math.PI * 2,
+
+			fadeStrength: 1,
+		}));
+
 		this.ctx = ctx;
 
 		this.resize();
+	}
+
+	drawSunRays(timestamp: number) {
+		const ctx = this.ctx;
+		const h = this.height;
+
+		ctx.save();
+		ctx.globalCompositeOperation = "screen";
+
+		for (let i = 0; i < this.rays.length; i++) {
+			const ray = this.rays[i];
+
+			const t = timestamp * ray.speed;
+
+			// Повільне хитання
+			const topOffset = Math.sin(t + ray.phase) * 16;
+			const bottomOffset = Math.sin(t * 0.6 + ray.phase) * 10;
+
+			// Зміщення кількох променів
+			const startShift = i === 2 ? 40 : i === 3 ? 70 : i === 4 ? 55 : 0;
+
+			const topX = ray.baseX + startShift + topOffset;
+			const bottomX = topX + ray.width * ray.spread + bottomOffset;
+
+			// Плавне згасання лише окремих променів
+			let opacity = ray.maxOpacity;
+
+			if (ray.canFade) {
+				const cycle =
+					(Math.sin(timestamp * ray.fadeSpeed + ray.fadePhase) + 1) * 0.5;
+
+				opacity = ray.maxOpacity * Math.pow(cycle, 6);
+			}
+
+			const beamGrad = ctx.createLinearGradient(topX, 100, bottomX, h);
+
+			beamGrad.addColorStop(0, `rgba(215,245,255,${opacity})`);
+
+			beamGrad.addColorStop(0.2, `rgba(135,220,255,${opacity * 0.75})`);
+
+			beamGrad.addColorStop(0.6, `rgba(40,150,230,${opacity * 0.3})`);
+
+			beamGrad.addColorStop(1, "rgba(0,0,0,0)");
+
+			ctx.fillStyle = beamGrad;
+
+			ctx.beginPath();
+
+			ctx.moveTo(topX - ray.width * 5, 0);
+
+			ctx.lineTo(topX + ray.width * 0.5, 0);
+
+			ctx.lineTo(bottomX + ray.width * ray.spread * 0.5, h);
+
+			ctx.lineTo(bottomX - ray.width * ray.spread * 0.5, h);
+
+			ctx.closePath();
+			ctx.fill();
+		}
+
+		ctx.restore();
+	}
+
+	drawAmbientLight() {
+		const ctx = this.ctx;
+
+		ctx.save();
+
+		ctx.globalCompositeOperation = "screen";
+
+		// Злегка розтягуємо градієнт по X, щоб він був схожий
+		// на світло від сонця поза кадром.
+		ctx.translate(this.width * 0.92, this.height * 0.08);
+		ctx.scale(1.45, 1);
+
+		const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.width * 0.45);
+
+		gradient.addColorStop(0.0, "rgba(255,245,220,0.42)");
+		gradient.addColorStop(0.15, "rgba(255,245,220,0.22)");
+		gradient.addColorStop(0.35, "rgba(255,245,220,0.10)");
+		gradient.addColorStop(0.65, "rgba(255,245,220,0.03)");
+		gradient.addColorStop(1.0, "rgba(255,245,220,0)");
+
+		ctx.fillStyle = gradient;
+
+		ctx.fillRect(-this.width, -this.height, this.width * 2, this.height * 2);
+
+		ctx.restore();
 	}
 
 	drawGlow(x: number, y: number, radius: number, color = "#ffffff", alpha = 1) {
@@ -41,6 +164,39 @@ export class Renderer {
 		this.ctx.globalAlpha = 1;
 	}
 
+	drawLightMask(
+		x: number,
+		y: number,
+		width: number,
+		height: number,
+		alpha = 1,
+		angle = 0,
+	) {
+		if (!this.lightMask.complete) {
+			return;
+		}
+
+		const ctx = this.ctx;
+
+		ctx.save();
+
+		ctx.translate(x, y);
+
+		if (angle !== 0) {
+			ctx.rotate((angle * Math.PI) / 180);
+		}
+
+		ctx.globalCompositeOperation = "screen";
+		ctx.globalAlpha = alpha;
+
+		ctx.drawImage(this.lightMask, 0, 0, width, height);
+
+		ctx.restore();
+
+		ctx.globalAlpha = 1;
+		ctx.globalCompositeOperation = "source-over";
+	}
+
 	drawSunLight(
 		x: number,
 		y: number,
@@ -57,146 +213,57 @@ export class Renderer {
 		ctx.translate(x, y);
 		ctx.rotate((angle * Math.PI) / 180);
 
-		// Промені на 60% коротші
 		const beamHeight = height * 0.6;
 
-		/*
-		 * Фаза залежить від положення променя.
-		 * Завдяки цьому 4 промені не синхронізовані.
-		 */
-		const phase = x * 0.013;
+		// Кожен промінь живе своїм життям
+		const phase = x * 0.017;
 
-		/*
-		 * Повільна зміна концентрації світла.
-		 *
-		 * Немає різкого ON/OFF.
-		 * Значення постійно плавно проходить
-		 * від слабкого до сильного і назад.
-		 */
-		const slowWave =
-			Math.sin(time * 0.11 + phase) * 0.5 +
-			Math.sin(time * 0.17 + phase * 1.7) * 0.3 +
-			Math.sin(time * 0.07 + phase * 2.3) * 0.2;
+		const intensity =
+			0.75 +
+			Math.sin(time * 0.08 + phase) * 0.15 +
+			Math.sin(time * 0.13 + phase * 1.8) * 0.1;
 
-		const intensity = 0.55 + slowWave * 0.45;
+		const gradient = ctx.createLinearGradient(0, 0, 0, beamHeight);
 
-		/*
-		 * Основна маска вздовж променя.
-		 *
-		 * Світло не обривається.
-		 * На початку та в кінці воно
-		 * плавно входить/розчиняється.
-		 */
-		const longitudinal = ctx.createLinearGradient(100, 100, 100, beamHeight);
-
-		longitudinal.addColorStop(0, "rgba(255,245,210,0)");
-
-		longitudinal.addColorStop(
+		gradient.addColorStop(0.0, "rgba(255,245,210,0)");
+		gradient.addColorStop(
 			0.08,
-			`rgba(255,245,210,${alpha * 0.4 * intensity})`,
+			`rgba(255,245,210,${alpha * 0.35 * intensity})`,
 		);
-
-		longitudinal.addColorStop(
-			0.22,
-			`rgba(255,245,210,${alpha * 0.65 * intensity})`,
+		gradient.addColorStop(0.45, `rgba(255,245,210,${alpha * intensity})`);
+		gradient.addColorStop(
+			0.85,
+			`rgba(255,245,210,${alpha * 0.25 * intensity})`,
 		);
+		gradient.addColorStop(1.0, "rgba(255,245,210,0)");
 
-		longitudinal.addColorStop(0.5, `rgba(255,245,210,${alpha * intensity})`);
+		ctx.fillStyle = gradient;
 
-		longitudinal.addColorStop(
-			0.72,
-			`rgba(255,245,210,${alpha * 0.55 * intensity})`,
-		);
+		ctx.filter = "blur(10px)";
 
-		longitudinal.addColorStop(
-			0.9,
-			`rgba(255,245,210,${alpha * 0.18 * intensity})`,
-		);
+		const slices = 48;
 
-		longitudinal.addColorStop(1, "rgba(255,245,210,0)");
+		for (let i = 0; i < slices; i++) {
+			const u = i / (slices - 1);
 
-		/*
-		 * Поперечний градієнт.
-		 *
-		 * Не кругла пляма.
-		 * Просто м'який край витягнутого променя.
-		 */
-		const transverse = ctx.createLinearGradient(
-			-width * 0.5,
-			0,
-			width * 0.5,
-			0,
-		);
+			// -1 ... 1
+			const d = u * 2 - 1;
 
-		transverse.addColorStop(0, "rgba(255,245,210,0)");
+			// Gaussian falloff
+			const edge = Math.exp(-(d * d) * 4);
 
-		transverse.addColorStop(0.2, "rgba(255,245,210,0.08)");
+			ctx.globalAlpha = edge;
 
-		transverse.addColorStop(0.4, "rgba(255,245,210,0.45)");
+			const sliceWidth = width / slices + 1;
 
-		transverse.addColorStop(0.5, "rgba(255,245,210,0.7)");
+			ctx.fillRect(-width / 2 + u * width, 0, sliceWidth, beamHeight);
+		}
 
-		transverse.addColorStop(0.6, "rgba(255,245,210,0.45)");
-
-		transverse.addColorStop(0.8, "rgba(255,245,210,0.08)");
-
-		transverse.addColorStop(1, "rgba(255,245,210,0)");
-
-		/*
-		 * Малюємо основний витягнутий shaft.
-		 */
-		ctx.beginPath();
-
-		ctx.rect(-width * 0.5, 0, width, beamHeight);
-
-		ctx.clip();
-
-		/*
-		 * Спочатку поздовжня інтенсивність.
-		 */
-		ctx.fillStyle = longitudinal;
-		ctx.fillRect(-width * 0.5, 0, width, beamHeight);
-
-		/*
-		 * Потім поперечна маска.
-		 *
-		 * multiply робить перекриття м'якшим,
-		 * а не створює окрему пляму.
-		 */
-		ctx.globalCompositeOperation = "multiply";
-
-		ctx.fillStyle = transverse;
-
-		ctx.fillRect(-width * 0.5, 0, width, beamHeight);
-
-		/*
-		 * Повертаємо нормальний режим.
-		 */
-		ctx.globalCompositeOperation = "source-over";
-
-		/*
-		 * Основний м'який край.
-		 */
-		ctx.filter = "blur(14px)";
-
-		ctx.globalAlpha = 0.8;
-
-		ctx.fillStyle = longitudinal;
-
-		ctx.fillRect(-width * 0.5, 0, width, beamHeight);
-
-		/*
-		 * На кінці промінь розчиняється сильніше.
-		 *
-		 * Не обриваємо його — просто збільшуємо blur.
-		 */
-		ctx.filter = "blur(30px)";
-
+		// Дуже м'який хвіст
+		ctx.filter = "blur(28px)";
 		ctx.globalAlpha = 0.35;
 
-		ctx.fillStyle = longitudinal;
-
-		ctx.fillRect(-width * 0.5, beamHeight * 0.35, width, beamHeight * 0.65);
+		ctx.fillRect(-width / 2, beamHeight * 0.45, width, beamHeight * 0.55);
 
 		ctx.restore();
 	}

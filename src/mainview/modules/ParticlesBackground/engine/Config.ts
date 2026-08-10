@@ -42,6 +42,13 @@ export const Config = {
 		verticalSpeed: 0.02,
 	},
 
+	lightField: {
+		x: 150,
+		y: -100,
+		width: 220,
+		extraHeight: 200,
+		length: 0.6,
+	},
 	lightShafts: {
 		count: 3,
 

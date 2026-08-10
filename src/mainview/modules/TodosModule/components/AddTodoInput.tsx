@@ -20,13 +20,13 @@ export const AddTodoInput = ({ onAdd }: { onAdd: (title: string) => void }) => {
 				value={title}
 				onChange={(e) => setTitle(e.target.value)}
 				placeholder="Add a new todo"
-				className="border p-2 flex-grow h-10"
+				className="border p-2 grow h-10 text-yellow-600 text-lg"
+				onKeyDown={(e) => (e.key === "Enter" ? handleAdd() : null)}
 			/>
 			<Button
-				size={"lg"}
 				type="button"
 				onClick={handleAdd}
-				className="bg-blue-500 text-white p-2"
+				className="bg-blue-500 text-white p-2 min-h-10"
 			>
 				Add new todo
 			</Button>

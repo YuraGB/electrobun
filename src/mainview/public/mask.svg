@@ -1,0 +1,83 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1920 1080"
+    preserveAspectRatio="none">
+    <title>Mask background</title>
+
+    <defs>
+
+        <!-- шум -->
+        <filter id="rayFilter" x="-50%" y="-50%" width="200%" height="200%">
+            <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.003 0.02"
+                numOctaves="2"
+                seed="8"
+                result="noise"/>
+
+            <feDisplacementMap
+                in="SourceGraphic"
+                in2="noise"
+                scale="25"/>
+
+            <feGaussianBlur
+                stdDeviation="18"
+                result="blur"/>
+
+            <feColorMatrix
+                in="blur"
+                type="matrix"
+                values="
+                1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 1.6 -0.2"/>
+        </filter>
+
+        <!-- плавне затухання -->
+        <linearGradient id="rayGradient"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="100%">
+
+            <stop offset="0%" stop-color="white" stop-opacity="0.75"/>
+            <stop offset="25%" stop-color="white" stop-opacity="0.35"/>
+            <stop offset="70%" stop-color="white" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="white" stop-opacity="0"/>
+        </linearGradient>
+
+    </defs>
+
+    <g filter="url(#rayFilter)">
+
+        <polygon
+            points="
+            1700,-100
+            1840,-100
+            1280,1080
+            1120,1080"
+            fill="url(#rayGradient)"
+            opacity="0.35"/>
+
+        <polygon
+            points="
+            1780,-100
+            1885,-100
+            1540,1080
+            1420,1080"
+            fill="url(#rayGradient)"
+            opacity="0.22"/>
+
+        <polygon
+            points="
+            1600,-100
+            1660,-100
+            900,1080
+            820,1080"
+            fill="url(#rayGradient)"
+            opacity="0.18"/>
+
+    </g>
+
+</svg>

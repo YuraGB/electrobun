@@ -1,3 +1,4 @@
+import { Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const EditButton = ({ onClick }: { onClick: () => void }) => {
@@ -11,7 +12,8 @@ export const EditButton = ({ onClick }: { onClick: () => void }) => {
 				"bg-warning text-destructive-foreground hover:bg-warning/40 hover:cursor-pointer"
 			}
 		>
-			Edit todo
+			<span hidden>Edit todo</span>
+			<Edit2 />
 		</Button>
 	);
 };

@@ -8,12 +8,18 @@ export class LightShaftSystem implements System {
 	render(context: EngineContext) {
 		const { renderer, time } = context;
 
-		const h = renderer.height;
 		const w = renderer.width;
+		const h = renderer.height;
 
-		// --------------------------------
-		// Розсіяне світло / scatter
-		// --------------------------------
+		// ----------------------------
+		// Ambient світло
+		// ----------------------------
+
+		// renderer.drawAmbientLight();
+
+		// ----------------------------
+		// Великі області розсіяного світла
+		// ----------------------------
 
 		for (let i = 0; i < Config.lightShafts.count; i++) {
 			const position = Config.lightShafts.positions[i];
@@ -39,50 +45,23 @@ export class LightShaftSystem implements System {
 			);
 		}
 
-		// --------------------------------
+		// ----------------------------
 		// Сонячні промені
-		// --------------------------------
+		// ----------------------------
 
-		const height = renderer.height + 300;
+		renderer.drawSunRays(time.elapsed);
 
-		renderer.drawSunLight(
-			w * 0.03,
-			-120,
-			180,
-			height,
-			0.018,
-			-12,
-			time.elapsed,
-		);
+		// ----------------------------
+		// Маска
+		// ----------------------------
 
-		// 	renderer.drawSunLight(
-		// 		w * 0.13,
-		// 		-120,
-		// 		220,
-		// 		height,
-		// 		0.016,
-		// 		-12,
-		// 		time.elapsed,
-		// 	);
-
-		// 	renderer.drawSunLight(
-		// 		w * 0.2,
-		// 		-120,
-		// 		200,
-		// 		height - 150,
-		// 		0.014,
-		// 		-12,
-		// 		time.elapsed,
-		// 	);
-
-		// 	renderer.drawSunLight(
-		// 		w * 0.32,
-		// 		-120,
-		// 		240,
-		// 		height,
-		// 		0.012,
-		// 		-12,
-		// 		time.elapsed,
-		// 	);
+		// renderer.drawLightMask(
+		//     0,
+		//     0,
+		//     w,
+		//     h,
+		//     0.5,
+		//     0,
+		// );
 	}
 }

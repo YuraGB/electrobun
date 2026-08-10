@@ -52,6 +52,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-green-custom: var(--green-custom);
+  --color-green-custom-light: var(--green-custom-light);
 }
 
 :root {
@@ -78,6 +80,8 @@
   --chart-3: oklch(0.596 0.145 163.225);
   --chart-4: oklch(0.508 0.118 165.612);
   --chart-5: oklch(0.432 0.095 166.913);
+  --green-custom: hsl(180deg, 25%, 25.1%);
+  --green-custom-light: hsl(180deg, 25%, 35.1%);
   --radius: 0.45rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0.008 326);

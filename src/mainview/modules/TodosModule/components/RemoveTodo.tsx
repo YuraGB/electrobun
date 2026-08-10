@@ -1,3 +1,4 @@
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const RemoveTodo = ({ onRemove }: { onRemove: () => void }) => {
@@ -11,7 +12,8 @@ export const RemoveTodo = ({ onRemove }: { onRemove: () => void }) => {
 				"bg-destructive text-destructive-foreground hover:bg-destructive/10 hover:cursor-pointer"
 			}
 		>
-			Remove todo
+			<Trash2 />
+			<span hidden>Remove todo</span>
 		</Button>
 	);
 };
