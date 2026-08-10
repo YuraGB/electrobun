@@ -34,6 +34,7 @@
 		"electrobun": "1.18.1",
 		"elysia": "^1.4.29",
 		"elysiajs": "^0.0.0",
+		"lucide-react": "^1.31.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"shadcn": "^4.16.1",
