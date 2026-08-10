@@ -4,3 +4,6 @@ dist/
 artifacts/
 *.tsbuildinfo
 .release/
+.env
+.env.*
+!.env.example
