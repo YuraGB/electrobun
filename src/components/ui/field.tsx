@@ -1,6 +1,6 @@
 "use client";
 
-import { AnyFieldApi } from "@tanstack/react-form";
+import type { AnyFieldApi } from "@tanstack/react-form";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useMemo } from "react";
 import { Label } from "@/components/ui/label";
@@ -105,7 +105,7 @@ function FieldLabel({
 		<Label
 			data-slot="field-label"
 			className={cn(
-				"group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:bg-primary/100 has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border *:data-[slot=field]:p-2 dark:has-data-checked:bg-primary/10",
+				"group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:bg-primary has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border *:data-[slot=field]:p-2 dark:has-data-checked:bg-primary/10",
 				"has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",
 				className,
 			)}
@@ -223,13 +223,23 @@ function FieldError({
 	);
 }
 
-function FieldInfo({ field }: { field: AnyFieldApi }) {
+function FieldInfo({
+	field,
+	className,
+}: {
+	field: AnyFieldApi;
+	className?: string;
+}) {
 	return (
 		<>
 			{field.state.meta.isTouched && !field.state.meta.isValid ? (
-				<em>{field.state.meta.errors.join(",")}</em>
+				<em className={cn("text-destructive text-sm", className)}>
+					{field.state.meta.errors.join(",")}
+				</em>
 			) : null}
-			{field.state.meta.isValidating ? "Validating..." : null}
+			{field.state.meta.isValidating ? (
+				<em className="text-sm">"Validating..."</em>
+			) : null}
 		</>
 	);
 }

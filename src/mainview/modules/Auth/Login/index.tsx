@@ -7,8 +7,8 @@ import { useLogin } from "../hooks/useLogin";
 export const LoginForm = () => {
 	const { form } = useLogin();
 	return (
-		<article>
-			<h2>Welcome back</h2>
+		<article className="py-10 px-12 bg-green-custom rounded-2xl  w-82.5">
+			<h2 className="text-yellow-700 text-4xl mb-4">Welcome back</h2>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -16,7 +16,7 @@ export const LoginForm = () => {
 					form.handleSubmit();
 				}}
 			>
-				<div>
+				<div className="pb-5">
 					{/* A type-safe field component*/}
 					<form.Field
 						name="email"
@@ -39,8 +39,11 @@ export const LoginForm = () => {
 							// Avoid hasty abstractions. Render props are great!
 							return (
 								<>
-									<Label htmlFor={field.name}>First Name:</Label>
+									<Label className="text-white pb-2" htmlFor={field.name}>
+										First Name:
+									</Label>
 									<Input
+										className="text-white"
 										id={field.name}
 										name={field.name}
 										value={field.state.value}
@@ -53,13 +56,16 @@ export const LoginForm = () => {
 						}}
 					/>
 				</div>
-				<div>
+				<div className="pb-5">
 					<form.Field
 						name="password"
 						children={(field) => (
 							<>
-								<Label htmlFor={field.name}>Password:</Label>
+								<Label className="text-white pb-2" htmlFor={field.name}>
+									Password:
+								</Label>
 								<Input
+									className="text-white"
 									id={field.name}
 									name={field.name}
 									value={field.state.value}
@@ -75,10 +81,16 @@ export const LoginForm = () => {
 					selector={(state) => [state.canSubmit, state.isSubmitting]}
 					children={([canSubmit, isSubmitting]) => (
 						<>
-							<Button type="submit" disabled={!canSubmit}>
+							<Button
+								type="submit"
+								disabled={!canSubmit}
+								variant={"secondary"}
+								className={"w-full mb-2 hover:cursor-pointer"}
+							>
 								{isSubmitting ? "..." : "Submit"}
 							</Button>
 							<Button
+								className={"w-full hover:cursor-pointer"}
 								type="reset"
 								onClick={(e) => {
 									// Avoid unexpected resets of form elements (especially <select> elements)

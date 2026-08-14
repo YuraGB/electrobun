@@ -8,6 +8,7 @@ export const Route = createFileRoute("/")({
 		if (session.data?.user.id) {
 			throw redirect({ to: "/todos" });
 		}
+		return session;
 	},
 	component: AuthModule,
 });

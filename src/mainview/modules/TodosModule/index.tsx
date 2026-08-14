@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { LogOutButton } from "../Auth/components/LogoutButton";
 import { List } from "./components/List";
 import { useTodos } from "./hooks/useTodos";
 
@@ -14,6 +15,7 @@ export const Todos = (): ReactNode => {
 				{todosError && <p>Error loading todos</p>}
 				{todos && <List todos={todos} />}
 			</div>
+			<LogOutButton />
 		</section>
 	);
 };
