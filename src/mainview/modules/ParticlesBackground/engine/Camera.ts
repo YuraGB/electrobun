@@ -16,9 +16,13 @@ export class Camera {
 	}
 
 	worldToScreen(point: Vector2, parallax = 1): Vector2 {
-		return point
-			.clone()
-			.sub(this.position.clone().multiplyScalar(parallax))
-			.multiplyScalar(this.zoom);
+		return this.worldToScreenInto(point, parallax, new Vector2());
+	}
+
+	worldToScreenInto(point: Vector2, parallax: number, out: Vector2): Vector2 {
+		out.x = (point.x - this.position.x * parallax) * this.zoom;
+		out.y = (point.y - this.position.y * parallax) * this.zoom;
+
+		return out;
 	}
 }

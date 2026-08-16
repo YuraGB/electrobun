@@ -4,54 +4,52 @@ export class Renderer {
 	readonly canvas: HTMLCanvasElement;
 	private readonly lightMask = new Image();
 	private readonly ctx: CanvasRenderingContext2D;
+	private readonly glowSprites = new Map<string, HTMLCanvasElement>();
+	private readonly bokehSprites = new Map<string, HTMLCanvasElement>();
 	width = 0;
 
 	height = 0;
 	private rays: {
-		baseX: number;
+		angleOffset: number;
+		lane: number;
 		width: number;
-		spread: number;
-		maxOpacity: number;
+		length: number;
+		alpha: number;
 		speed: number;
 		phase: number;
-
-		canFade: boolean;
-		fadeSpeed: number;
-		fadePhase: number;
-		fadeStrength: number;
+		pulseSpeed: number;
+		pulsePhase: number;
 	}[] = [];
 	constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
 		this.lightMask.src = "/mask.svg";
 
-		const ctx = canvas.getContext("2d");
+		const ctx = canvas.getContext("2d", {
+			alpha: false,
+			desynchronized: true,
+		});
 
 		if (!ctx) {
 			throw new Error("Canvas2D is not supported");
 		}
 
-		this.rays = Array.from({ length: 16 }, (_, i) => ({
-			baseX: (i / 16) * this.width * 1.2 - this.width * 0.1,
+		const rayCount = Config.lightShafts.count;
 
-			width: 40 + Math.random() * 70,
+		this.rays = Array.from({ length: rayCount }, (_, i) => {
+			const lane = rayCount === 1 ? 0 : i / (rayCount - 1) - 0.5;
 
-			spread: 1.8 + Math.random() * 0.8,
-
-			maxOpacity: 0.035 + Math.random() * 0.04,
-
-			speed: 0.00003 + Math.random() * 0.00004,
-
-			phase: Math.random() * Math.PI * 2,
-
-			// тільки дальні промені будуть зникати
-			canFade: i >= 10,
-
-			fadeSpeed: 0.00015 + Math.random() * 0.00008,
-
-			fadePhase: Math.random() * Math.PI * 2,
-
-			fadeStrength: 1,
-		}));
+			return {
+				angleOffset: lane * 0.08 + (Math.random() - 0.5) * 0.025,
+				lane,
+				width: 70 + Math.random() * 110,
+				length: 0.92 + Math.random() * 0.22,
+				alpha: 0.014 + Math.random() * 0.018,
+				speed: 0.025 + Math.random() * 0.055,
+				phase: Math.random() * Math.PI * 2,
+				pulseSpeed: 0.08 + Math.random() * 0.05,
+				pulsePhase: Math.random() * Math.PI * 2,
+			};
+		});
 
 		this.ctx = ctx;
 
@@ -60,61 +58,111 @@ export class Renderer {
 
 	drawSunRays(timestamp: number) {
 		const ctx = this.ctx;
-		const h = this.height;
+		const originX = this.width * -0.07;
+		const originY = this.height * -0.4;
+		const targetX = this.width * 0.18;
+		const targetY = this.height * 0.82;
+		const baseAngle = Math.atan2(targetY - originY, targetX - originX);
+		const length = Math.hypot(this.width, this.height) * 1.25;
 
 		ctx.save();
 		ctx.globalCompositeOperation = "screen";
 
-		for (let i = 0; i < this.rays.length; i++) {
-			const ray = this.rays[i];
+		const bloomRadius = Math.max(this.width, this.height) * 0.78;
+		const bloom = ctx.createRadialGradient(
+			originX,
+			originY,
+			0,
+			originX,
+			originY,
+			bloomRadius,
+		);
+		bloom.addColorStop(0, "rgba(255,244,205,0.22)");
+		bloom.addColorStop(0.22, "rgba(255,230,170,0.095)");
+		bloom.addColorStop(0.55, "rgba(120,190,255,0.036)");
+		bloom.addColorStop(1, "rgba(0,0,0,0)");
 
-			const t = timestamp * ray.speed;
+		ctx.fillStyle = bloom;
+		ctx.fillRect(0, 0, this.width, this.height);
 
-			// Повільне хитання
-			const topOffset = Math.sin(t + ray.phase) * 16;
-			const bottomOffset = Math.sin(t * 0.6 + ray.phase) * 10;
+		this.drawBeam(
+			originX,
+			originY,
+			baseAngle,
+			length,
+			this.height * 0.05,
+			this.height * 0.5,
+			0,
+			0.026,
+		);
 
-			// Зміщення кількох променів
-			const startShift = i === 2 ? 40 : i === 3 ? 70 : i === 4 ? 55 : 0;
+		for (const ray of this.rays) {
+			const wave = Math.sin(timestamp * ray.speed + ray.phase);
+			const pulse =
+				0.72 +
+				(Math.sin(timestamp * ray.pulseSpeed + ray.pulsePhase) + 1) * 0.14;
+			const angle = baseAngle + ray.angleOffset + wave * 0.006;
+			const endOffset =
+				ray.lane * this.height * 0.22 +
+				Math.sin(timestamp * ray.speed * 0.6 + ray.phase) * 12;
+			const rayLength = length * ray.length;
 
-			const topX = ray.baseX + startShift + topOffset;
-			const bottomX = topX + ray.width * ray.spread + bottomOffset;
-
-			// Плавне згасання лише окремих променів
-			let opacity = ray.maxOpacity;
-
-			if (ray.canFade) {
-				const cycle =
-					(Math.sin(timestamp * ray.fadeSpeed + ray.fadePhase) + 1) * 0.5;
-
-				opacity = ray.maxOpacity * Math.pow(cycle, 6);
-			}
-
-			const beamGrad = ctx.createLinearGradient(topX, 100, bottomX, h);
-
-			beamGrad.addColorStop(0, `rgba(215,245,255,${opacity})`);
-
-			beamGrad.addColorStop(0.2, `rgba(135,220,255,${opacity * 0.75})`);
-
-			beamGrad.addColorStop(0.6, `rgba(40,150,230,${opacity * 0.3})`);
-
-			beamGrad.addColorStop(1, "rgba(0,0,0,0)");
-
-			ctx.fillStyle = beamGrad;
-
-			ctx.beginPath();
-
-			ctx.moveTo(topX - ray.width * 5, 0);
-
-			ctx.lineTo(topX + ray.width * 0.5, 0);
-
-			ctx.lineTo(bottomX + ray.width * ray.spread * 0.5, h);
-
-			ctx.lineTo(bottomX - ray.width * ray.spread * 0.5, h);
-
-			ctx.closePath();
-			ctx.fill();
+			this.drawBeam(
+				originX,
+				originY,
+				angle,
+				rayLength,
+				14,
+				ray.width * 1.1,
+				endOffset,
+				ray.alpha * pulse * 0.34,
+			);
+			this.drawBeam(
+				originX,
+				originY,
+				angle,
+				rayLength,
+				8,
+				ray.width * 0.52,
+				endOffset * 0.88,
+				ray.alpha * pulse,
+			);
 		}
+
+		ctx.restore();
+	}
+
+	private drawBeam(
+		x: number,
+		y: number,
+		angle: number,
+		length: number,
+		startHalfWidth: number,
+		endHalfWidth: number,
+		endOffset: number,
+		alpha: number,
+	) {
+		const ctx = this.ctx;
+
+		ctx.save();
+		ctx.translate(x, y);
+		ctx.rotate(angle);
+
+		const gradient = ctx.createLinearGradient(0, 0, length, 0);
+		gradient.addColorStop(0, "rgba(255,245,205,0)");
+		gradient.addColorStop(0.08, `rgba(255,245,205,${alpha * 0.55})`);
+		gradient.addColorStop(0.32, `rgba(255,238,190,${alpha})`);
+		gradient.addColorStop(0.66, `rgba(155,210,255,${alpha * 0.45})`);
+		gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+		ctx.fillStyle = gradient;
+		ctx.beginPath();
+		ctx.moveTo(0, -startHalfWidth);
+		ctx.lineTo(length, endOffset - endHalfWidth);
+		ctx.lineTo(length, endOffset + endHalfWidth);
+		ctx.lineTo(0, startHalfWidth);
+		ctx.closePath();
+		ctx.fill();
 
 		ctx.restore();
 	}
@@ -147,20 +195,16 @@ export class Renderer {
 	}
 
 	drawGlow(x: number, y: number, radius: number, color = "#ffffff", alpha = 1) {
-		const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
+		if (alpha <= 0 || radius <= 0) {
+			return;
+		}
 
-		gradient.addColorStop(0, color);
-		gradient.addColorStop(0.15, color);
-		gradient.addColorStop(0.4, "rgba(255,255,255,0.2)");
-		gradient.addColorStop(1, "transparent");
+		const spriteRadius = Math.max(1, Math.ceil(radius));
+		const sprite = this.getGlowSprite(spriteRadius, color);
+		const size = spriteRadius * 2;
 
 		this.ctx.globalAlpha = alpha;
-		this.ctx.fillStyle = gradient;
-
-		this.ctx.beginPath();
-		this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-		this.ctx.fill();
-
+		this.ctx.drawImage(sprite, x - spriteRadius, y - spriteRadius, size, size);
 		this.ctx.globalAlpha = 1;
 	}
 
@@ -345,25 +389,19 @@ export class Renderer {
 		x: number,
 		y: number,
 		radius: number,
-		color = "#ffffff",
+		_color = "#ffffff",
 		alpha = 1,
 	) {
-		const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, radius);
+		if (alpha <= 0 || radius <= 0) {
+			return;
+		}
 
-		gradient.addColorStop(0.0, "rgba(255,255,255,0.18)");
-		gradient.addColorStop(0.2, "rgba(255,255,255,0.15)");
-		gradient.addColorStop(0.45, "rgba(255,255,255,0.08)");
-		gradient.addColorStop(0.75, "rgba(255,255,255,0.03)");
-		gradient.addColorStop(1.0, "rgba(255,255,255,0)");
+		const spriteRadius = Math.max(1, Math.ceil(radius));
+		const sprite = this.getBokehSprite(spriteRadius);
+		const size = spriteRadius * 2;
 
 		this.ctx.globalAlpha = alpha;
-
-		this.ctx.beginPath();
-		this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-
-		this.ctx.fillStyle = gradient;
-		this.ctx.fill();
-
+		this.ctx.drawImage(sprite, x - spriteRadius, y - spriteRadius, size, size);
 		this.ctx.globalAlpha = 1;
 	}
 
@@ -393,12 +431,93 @@ export class Renderer {
 		this.ctx.globalAlpha = 1;
 	}
 
+	private getGlowSprite(radius: number, color: string): HTMLCanvasElement {
+		const key = `${color}:${radius}`;
+		const cached = this.glowSprites.get(key);
+
+		if (cached) {
+			return cached;
+		}
+
+		const size = radius * 2;
+		const sprite = document.createElement("canvas");
+		sprite.width = size;
+		sprite.height = size;
+
+		const ctx = sprite.getContext("2d");
+
+		if (!ctx) {
+			return sprite;
+		}
+
+		const gradient = ctx.createRadialGradient(
+			radius,
+			radius,
+			0,
+			radius,
+			radius,
+			radius,
+		);
+		gradient.addColorStop(0, color);
+		gradient.addColorStop(0.15, color);
+		gradient.addColorStop(0.4, "rgba(255,255,255,0.2)");
+		gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+		ctx.fillStyle = gradient;
+		ctx.fillRect(0, 0, size, size);
+
+		this.glowSprites.set(key, sprite);
+
+		return sprite;
+	}
+
+	private getBokehSprite(radius: number): HTMLCanvasElement {
+		const key = String(radius);
+		const cached = this.bokehSprites.get(key);
+
+		if (cached) {
+			return cached;
+		}
+
+		const size = radius * 2;
+		const sprite = document.createElement("canvas");
+		sprite.width = size;
+		sprite.height = size;
+
+		const ctx = sprite.getContext("2d");
+
+		if (!ctx) {
+			return sprite;
+		}
+
+		const gradient = ctx.createRadialGradient(
+			radius,
+			radius,
+			0,
+			radius,
+			radius,
+			radius,
+		);
+		gradient.addColorStop(0.0, "rgba(255,255,255,0.18)");
+		gradient.addColorStop(0.2, "rgba(255,255,255,0.15)");
+		gradient.addColorStop(0.45, "rgba(255,255,255,0.08)");
+		gradient.addColorStop(0.75, "rgba(255,255,255,0.03)");
+		gradient.addColorStop(1.0, "rgba(255,255,255,0)");
+
+		ctx.fillStyle = gradient;
+		ctx.fillRect(0, 0, size, size);
+
+		this.bokehSprites.set(key, sprite);
+
+		return sprite;
+	}
+
 	resize() {
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
 
-		this.canvas.width = this.width * Config.pixelRatio;
-		this.canvas.height = this.height * Config.pixelRatio;
+		this.canvas.width = Math.floor(this.width * Config.pixelRatio);
+		this.canvas.height = Math.floor(this.height * Config.pixelRatio);
 
 		this.canvas.style.width = `${this.width}px`;
 		this.canvas.style.height = `${this.height}px`;

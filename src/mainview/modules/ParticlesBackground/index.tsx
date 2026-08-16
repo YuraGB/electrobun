@@ -14,13 +14,17 @@ function ParticleBackground() {
 	useEffect(() => {
 		if (!canvasRef.current) return;
 
-		const pool = new ParticlePool(1000);
+		const pool = new ParticlePool(Config.particles.count);
 		const engine = new Engine(canvasRef.current);
-		const bokehPool = new BokehPool(Config.bokeh.count);
 
 		engine.addSystem(new LightShaftSystem());
 		engine.addSystem(new DustSystem());
-		engine.addSystem(new BokehSystem(bokehPool));
+
+		if (Config.bokeh.enabled) {
+			const bokehPool = new BokehPool(Config.bokeh.count);
+			engine.addSystem(new BokehSystem(bokehPool));
+		}
+
 		engine.addSystem(new ParticleSystem(pool));
 
 		engine.start();
@@ -28,7 +32,12 @@ function ParticleBackground() {
 		return () => engine.stop();
 	}, []);
 
-	return <canvas ref={canvasRef} className="fixed inset-0 z-[-1]" />;
+	return (
+		<canvas
+			ref={canvasRef}
+			className="pointer-events-none fixed inset-0 z-[-1]"
+		/>
+	);
 }
 
 export { ParticleBackground };

@@ -1,3 +1,5 @@
+const maxDelta = 0.05;
+
 export class Time {
 	private last = performance.now();
 
@@ -9,10 +11,15 @@ export class Time {
 	private frames = 0;
 	private fpsTimer = 0;
 
-	update() {
-		const now = performance.now();
+	reset(now = performance.now()) {
+		this.last = now;
+		this.delta = 0;
+		this.frames = 0;
+		this.fpsTimer = 0;
+	}
 
-		this.delta = (now - this.last) / 1000;
+	update(now = performance.now()) {
+		this.delta = Math.min((now - this.last) / 1000, maxDelta);
 		this.elapsed += this.delta;
 
 		this.last = now;
@@ -25,8 +32,6 @@ export class Time {
 
 			this.frames = 0;
 			this.fpsTimer = 0;
-
-			console.log(`FPS: ${this.fps}`);
 		}
 	}
 }

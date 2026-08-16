@@ -1,12 +1,15 @@
 import type { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
 import { Config } from "../engine/Config";
+import { Vector2 } from "../math/Vector2";
 import type { BokehParticle } from "../particles/BokehParticle";
 import type { BokehPool } from "../particles/BokehPool";
 import { horizontalBand } from "../particles/ParticleDistribution";
 import { gaussian } from "../utils/Random";
 
 export class BokehSystem implements System {
+	private readonly screen = new Vector2();
+
 	constructor(private readonly pool: BokehPool) {
 		for (const particle of this.pool.particles) {
 			particle.position.x = Math.random() * window.innerWidth;
@@ -45,7 +48,11 @@ export class BokehSystem implements System {
 
 	render(context: EngineContext) {
 		for (const particle of this.pool.particles) {
-			const screen = context.camera.worldToScreen(particle.position, 2.0);
+			const screen = context.camera.worldToScreenInto(
+				particle.position,
+				2.0,
+				this.screen,
+			);
 
 			const alpha =
 				particle.alpha +

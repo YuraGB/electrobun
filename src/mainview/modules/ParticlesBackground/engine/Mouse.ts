@@ -8,7 +8,9 @@ export class Mouse {
 	smoothness = 0.08;
 
 	constructor() {
-		window.addEventListener("pointermove", this.onPointerMove);
+		window.addEventListener("pointermove", this.onPointerMove, {
+			passive: true,
+		});
 	}
 
 	destroy() {

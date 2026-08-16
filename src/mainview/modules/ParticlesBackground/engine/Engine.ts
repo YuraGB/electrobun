@@ -1,6 +1,7 @@
 import type { EngineContext } from "../core/EngineContext";
 import type { System } from "../core/System";
 import { Camera } from "./Camera";
+import { Config } from "./Config";
 import { Mouse } from "./Mouse";
 import { Renderer } from "./Renderer";
 import { Time } from "./Time";
@@ -16,7 +17,10 @@ export class Engine {
 	readonly time = new Time();
 
 	private frame = 0;
+	private lastFrameTime = 0;
+	private running = false;
 	private readonly mouseInfluence = 0.03;
+	private readonly frameInterval = 1000 / Config.targetFps;
 
 	constructor(canvas: HTMLCanvasElement) {
 		this.renderer = new Renderer(canvas);
@@ -28,27 +32,63 @@ export class Engine {
 			wind: this.wind,
 		};
 
-		window.addEventListener("resize", () => this.renderer.resize());
+		window.addEventListener("resize", this.onResize, { passive: true });
+		document.addEventListener("visibilitychange", this.onVisibilityChange);
 	}
 
 	start() {
-		this.loop();
+		if (this.running) {
+			return;
+		}
+
+		this.running = true;
+		this.time.reset();
+		this.frame = requestAnimationFrame(this.loop);
 	}
 	addSystem(system: System) {
 		this.systems.push(system);
 	}
 
 	stop() {
+		this.running = false;
 		cancelAnimationFrame(this.frame);
+		window.removeEventListener("resize", this.onResize);
+		document.removeEventListener("visibilitychange", this.onVisibilityChange);
 		this.mouse.destroy();
 	}
 
-	private loop = () => {
-		this.time.update();
+	private readonly onResize = () => {
+		this.renderer.resize();
+	};
 
-		this.update();
+	private readonly onVisibilityChange = () => {
+		if (document.hidden) {
+			cancelAnimationFrame(this.frame);
+			return;
+		}
 
-		this.render();
+		if (!this.running) {
+			return;
+		}
+
+		this.time.reset();
+		this.lastFrameTime = 0;
+		this.frame = requestAnimationFrame(this.loop);
+	};
+
+	private loop = (timestamp: number) => {
+		if (!this.running || document.hidden) {
+			return;
+		}
+
+		const elapsed = timestamp - this.lastFrameTime;
+
+		if (elapsed >= this.frameInterval * 0.95) {
+			this.lastFrameTime = timestamp;
+			this.time.update(timestamp);
+			this.update();
+			this.render();
+		}
 
 		this.frame = requestAnimationFrame(this.loop);
 	};
@@ -72,6 +112,9 @@ export class Engine {
 		for (const system of this.systems) {
 			system.render(this.context);
 		}
-		this.renderer.drawText(`FPS: ${this.time.fps}`, 20, 30);
+
+		if (Config.debug) {
+			this.renderer.drawText(`FPS: ${this.time.fps}`, 20, 30);
+		}
 	}
 }

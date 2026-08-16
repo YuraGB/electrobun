@@ -6,6 +6,9 @@ export class Particle {
 	twinkleSpeed = 0.5 + Math.random() * 1.5;
 	depth = 1;
 	twinkleOffset = Math.random() * Math.PI * 2;
+	waveOffset = 0;
+	wavePhase = 0;
+	waveLayer = Math.random();
 	radius = 2;
 	alpha = 1;
 }

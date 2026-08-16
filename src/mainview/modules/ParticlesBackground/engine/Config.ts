@@ -1,9 +1,26 @@
+const deviceMemory = (navigator as Navigator & { deviceMemory?: number })
+	.deviceMemory;
+
+const prefersReducedMotion = window.matchMedia(
+	"(prefers-reduced-motion: reduce)",
+).matches;
+
+const lowPowerDevice =
+	prefersReducedMotion ||
+	(deviceMemory !== undefined && deviceMemory <= 4) ||
+	navigator.hardwareConcurrency <= 4;
+
+const quality = lowPowerDevice ? "low" : "high";
+
 export const Config = {
-	pixelRatio: window.devicePixelRatio,
+	debug: false,
+	quality,
+	targetFps: lowPowerDevice ? 30 : 60,
+	pixelRatio: Math.min(window.devicePixelRatio || 1, lowPowerDevice ? 1 : 1.5),
 	background: "#050505",
 
 	particles: {
-		count: 120,
+		count: lowPowerDevice ? 80 : 140,
 		parallaxStrength: 1,
 		minRadius: 1,
 		maxRadius: 7,
@@ -14,12 +31,19 @@ export const Config = {
 		minAlpha: 0.3,
 		maxAlpha: 1,
 
-		minSpeed: 1,
-		maxSpeed: 3,
+		minSpeed: 0.18,
+		maxSpeed: 0.72,
+		drawGlows: !prefersReducedMotion,
+		waveCenter: 0.64,
+		waveAmplitude: 0.055,
+		waveBand: 0.028,
+		waveLength: 0.72,
+		waveDriftSpeed: 0.075,
+		waveSettle: 0.9,
 	},
 
 	dust: {
-		count: 180,
+		count: lowPowerDevice ? 120 : 360,
 
 		minRadius: 1,
 		maxRadius: 2,
@@ -29,7 +53,7 @@ export const Config = {
 	},
 
 	bokeh: {
-		count: 6,
+		count: lowPowerDevice ? 2 : 5,
 
 		minRadius: 30,
 		maxRadius: 80,
@@ -40,6 +64,7 @@ export const Config = {
 		minSpeed: 0.08,
 		maxSpeed: 0.2,
 		verticalSpeed: 0.02,
+		enabled: !prefersReducedMotion,
 	},
 
 	lightField: {
@@ -50,7 +75,7 @@ export const Config = {
 		length: 0.6,
 	},
 	lightShafts: {
-		count: 3,
+		count: lowPowerDevice ? 5 : 9,
 
 		positions: [0.15, 0.45, 0.72],
 		widths: [220, 180, 260],
@@ -61,9 +86,9 @@ export const Config = {
 		angle: -12,
 
 		driftSpeed: 0.08,
-		driftAmount: 4,
+		driftAmount: lowPowerDevice ? 0 : 4,
 
 		pulseSpeed: 0.12,
-		pulseAmount: 0.03,
+		pulseAmount: lowPowerDevice ? 0 : 0.03,
 	},
 };

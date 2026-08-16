@@ -69,7 +69,7 @@ export const TodoItem = ({ todo }: { todo: TTodoDTO }): ReactNode => {
 				className="w-full bg-green-custom border-green-custom hover:bg-green-custom-light hover:scale-105"
 			>
 				<ItemContent title="todo title">
-					<FieldGroup className="mx-auto w-56">
+					<FieldGroup className="mx-auto w-[90%]">
 						<Field orientation="horizontal">
 							<Checkbox
 								id={String(todo.id)}
@@ -86,7 +86,7 @@ export const TodoItem = ({ todo }: { todo: TTodoDTO }): ReactNode => {
 								}}
 							/>
 							<ItemTitle className="text-left pl-2">
-								<span className={"text-lg text-yellow-600"}>
+								<span className={"text-[1rem] text-yellow-500"}>
 									{todo.completed && <s> {todo.title} </s>}
 									{!todo.completed && <span> {todo.title} </span>}
 								</span>
