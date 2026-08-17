@@ -1,8 +1,9 @@
+import type { BokehParticle } from "../particles/BokehParticle";
 import type { Particle } from "../particles/Particle";
 import type { Time } from "./Time";
 
 export class Wind {
-	getY(particle: Particle, time: Time) {
+	getY(particle: Particle | BokehParticle, time: Time) {
 		const xWave = Math.sin(particle.position.x * 0.008 + time.elapsed * 0.15);
 
 		const yWave = Math.sin(particle.position.y * 0.01 - time.elapsed * 0.1);
