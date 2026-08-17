@@ -41,7 +41,7 @@ export const TodoItem = ({ todo }: { todo: TTodoDTO }): ReactNode => {
 		todoItem = (
 			<Item
 				variant="outline"
-				className="w-full bg-green-custom border-green-custom min-h-23.5 hover:bg-green-custom-light hover:scale-105 "
+				className="w-full bg-green-custom border-yellow-900 min-h-23.5 hover:bg-green-custom-light hover:scale-105 "
 			>
 				<ItemContent title="todo title">
 					<FieldGroup className="mx-auto w-56">
@@ -66,7 +66,7 @@ export const TodoItem = ({ todo }: { todo: TTodoDTO }): ReactNode => {
 		todoItem = (
 			<Item
 				variant="outline"
-				className="w-full bg-green-custom border-green-custom hover:bg-green-custom-light hover:scale-105"
+				className="w-full bg-green-custom border-yellow-700 rounded hover:bg-green-custom-light hover:scale-105"
 			>
 				<ItemContent title="todo title">
 					<FieldGroup className="mx-auto w-[90%]">

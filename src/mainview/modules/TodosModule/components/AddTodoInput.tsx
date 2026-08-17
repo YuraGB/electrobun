@@ -26,9 +26,9 @@ export const AddTodoInput = ({ onAdd }: { onAdd: (title: string) => void }) => {
 			<Button
 				type="button"
 				onClick={handleAdd}
-				className="bg-blue-500 text-white p-2 min-h-10"
+				className="bg-blue-500 text-white p-2 min-h-10 flex text-nowrap"
 			>
-				Add new todo
+				New todo
 			</Button>
 		</div>
 	);

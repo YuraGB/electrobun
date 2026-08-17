@@ -11,13 +11,13 @@ export default function GlobalErrorCatcher({
 	return (
 		<ErrorBoundary
 			fallbackRender={({ error, resetErrorBoundary }) => (
-				<div role="alert">
+				<article role="alert" className="bg-amber-400">
 					<p>Something went wrong:</p>
 					<pre>{getErrorMessage(error)}</pre>
 					<Button type={"button"} onClick={resetErrorBoundary}>
 						Try again
 					</Button>
-				</div>
+				</article>
 			)}
 			onError={(_, info) => {
 				logger.error(info.componentStack);
