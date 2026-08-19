@@ -1,14 +1,24 @@
-import { useState } from "react";
+import type { ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export const AddTodoInput = ({ onAdd }: { onAdd: (title: string) => void }) => {
-	const [title, setTitle] = useState("");
-
+export const TodoInput = ({
+	onAction,
+	buttonLabel = "New todo",
+	onChange,
+	searchValue,
+	reset,
+}: {
+	onAction: (value: string) => void;
+	buttonLabel: string;
+	searchValue: string;
+	onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+	reset: () => void;
+}) => {
 	const handleAdd = () => {
-		if (title.trim() !== "") {
-			onAdd(title);
-			setTitle("");
+		if (searchValue.trim() !== "") {
+			onAction(searchValue);
+			reset();
 		}
 	};
 
@@ -17,8 +27,8 @@ export const AddTodoInput = ({ onAdd }: { onAdd: (title: string) => void }) => {
 			<Input
 				type="text"
 				size={40}
-				value={title}
-				onChange={(e) => setTitle(e.target.value)}
+				value={searchValue}
+				onChange={onChange}
 				placeholder="Add a new todo"
 				className="border p-2 grow h-10 text-yellow-500 text-lg bg-green-custom"
 				onKeyDown={(e) => (e.key === "Enter" ? handleAdd() : null)}
@@ -28,7 +38,7 @@ export const AddTodoInput = ({ onAdd }: { onAdd: (title: string) => void }) => {
 				onClick={handleAdd}
 				className="bg-blue-500 text-white p-2 min-h-10 flex text-nowrap"
 			>
-				New todo
+				{buttonLabel}
 			</Button>
 		</div>
 	);
