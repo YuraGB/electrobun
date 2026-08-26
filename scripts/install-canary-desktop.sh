@@ -1,29 +1,28 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-APP_NAME="react-tailwind-vite-canary"
-APP_DIR="$HOME/Projects/elektrobun/TodoList/.release/$APP_NAME"
+APP_DIR="$(find .release -mindepth 1 -maxdepth 1 -type d | head -n1)"
+
+LAUNCHER="$APP_DIR/bin/launcher"
+ICON="$APP_DIR/Resources/appIcon.png"
+DESKTOP_ID="$(basename "$APP_DIR")"
 DESKTOP_DIR="$HOME/.local/share/applications"
-DESKTOP_FILE="$DESKTOP_DIR/$APP_NAME.desktop"
+
+WM_CLASS="$("$LAUNCHER" --wm-class 2>/dev/null || echo "$DESKTOP_ID")"
 
 mkdir -p "$DESKTOP_DIR"
 
-cat > "$DESKTOP_FILE" <<EOF
+cat > "$DESKTOP_DIR/$DESKTOP_ID.desktop" <<EOF
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=react-tailwind-vite (Canary)
-Comment=react-tailwind-vite application
-Exec=$APP_DIR/bin/launcher
-Icon=$APP_DIR/Resources/appIcon.png
+Name=$DESKTOP_ID
+Exec=$LAUNCHER
+Icon=$ICON
 Terminal=false
-StartupWMClass=react-tailwind-vite-canary-canary
+StartupWMClass=$WM_CLASS
 Categories=Utility;
 EOF
 
-chmod +x "$APP_DIR/bin/launcher"
-
 update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
-
-echo "Installed: $DESKTOP_FILE"
