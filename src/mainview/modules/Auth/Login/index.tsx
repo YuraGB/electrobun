@@ -8,7 +8,7 @@ export const LoginForm = () => {
 	const { form } = useLogin();
 	return (
 		<article className="py-10 px-12 bg-green-custom rounded-2xl  w-82.5">
-			<h2 className="text-yellow-700 text-4xl mb-4">Welcome back</h2>
+			<h2 className="text-yellow-500 text-2xl mb-4">Welcome back</h2>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -43,7 +43,7 @@ export const LoginForm = () => {
 										First Name:
 									</Label>
 									<Input
-										className="text-white"
+										className="text-white text-2xl"
 										id={field.name}
 										name={field.name}
 										value={field.state.value}
@@ -65,7 +65,7 @@ export const LoginForm = () => {
 									Password:
 								</Label>
 								<Input
-									className="text-white"
+									className="text-white text-2xl"
 									id={field.name}
 									name={field.name}
 									value={field.state.value}

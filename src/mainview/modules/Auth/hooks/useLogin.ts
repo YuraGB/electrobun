@@ -1,5 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
+import { logger } from "better-auth";
 import { authClient } from "../lib/auth-client";
 
 export const useLogin = () => {
@@ -30,7 +31,7 @@ export const useLogin = () => {
 					},
 					onError: (ctx) => {
 						// display the error message
-						alert(ctx.error.message);
+						logger.error(ctx.error.message);
 					},
 				},
 			);

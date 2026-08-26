@@ -4,6 +4,7 @@ import {
 	BETER_AUTH_BASE_URL,
 	ELECTROBUN_APP_URL,
 	ELECTROBUN_SERV_URL,
+	ELECTROBUN_VIEW_ORIGIN,
 } from "../../../constants/shared";
 import { db } from "../db";
 import {
@@ -14,7 +15,11 @@ import {
 } from "../db/schemas/auth-schema";
 export const auth = betterAuth({
 	baseURL: BETER_AUTH_BASE_URL,
-	trustedOrigins: [ELECTROBUN_APP_URL, ELECTROBUN_SERV_URL],
+	trustedOrigins: [
+		ELECTROBUN_APP_URL,
+		ELECTROBUN_SERV_URL,
+		ELECTROBUN_VIEW_ORIGIN,
+	],
 	database: drizzleAdapter(db, {
 		provider: "pg", // or "pg" or "mysql"
 		schema: {

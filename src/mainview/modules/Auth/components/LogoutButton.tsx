@@ -7,7 +7,7 @@ export const LogOutButton = () => {
 	return (
 		<Button
 			size="icon-lg"
-			className="fixed bottom-6 right-6 rounded-full shadow-lg p-5"
+			className="fixed bottom-6 right-6 rounded-full shadow-lg p-5 bg-green-custom text-amber-50"
 			onClick={onLogOutHandler}
 		>
 			<LogOut className="size-5" />

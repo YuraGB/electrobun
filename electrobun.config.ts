@@ -1,5 +1,3 @@
-import type { ElectrobunConfig } from "electrobun";
-
 export default {
 	app: {
 		name: "react-tailwind-vite",
@@ -11,6 +9,8 @@ export default {
 		copy: {
 			"dist/index.html": "views/mainview/index.html",
 			"dist/assets": "views/mainview/assets",
+			"dist/mask.svg": "views/mainview/mask.svg",
+			"dist/mask.jpeg": "views/mainview/mask.jpeg",
 			drizzle: "drizzle",
 			".env": ".env",
 		},
@@ -18,12 +18,15 @@ export default {
 		watchIgnore: ["dist/**"],
 		mac: {
 			bundleCEF: false,
+			icons: "assets/icon.iconset",
 		},
 		linux: {
 			bundleCEF: false,
+			icon: "assets/icon.png",
 		},
 		win: {
 			bundleCEF: false,
+			icon: "assets/icon.ico",
 		},
 	},
-} satisfies ElectrobunConfig;
+};

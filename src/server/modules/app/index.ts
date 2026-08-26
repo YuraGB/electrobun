@@ -1,7 +1,10 @@
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 import { ELYSIA_PORT } from "../../../constants";
-import { ELECTROBUN_APP_URL } from "../../../constants/shared";
+import {
+	ELECTROBUN_APP_URL,
+	ELECTROBUN_VIEW_ORIGIN,
+} from "../../../constants/shared";
 import { auth } from "../auth";
 import { runMigrations } from "../db/migrations";
 import { routes } from "../routes";
@@ -15,7 +18,7 @@ new Elysia({
 })
 	.use(
 		cors({
-			origin: ELECTROBUN_APP_URL,
+			origin: [ELECTROBUN_APP_URL, ELECTROBUN_VIEW_ORIGIN],
 			credentials: true,
 		}),
 	)

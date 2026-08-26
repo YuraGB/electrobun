@@ -4,3 +4,4 @@ export const ELECTROBUN_APP_URL =
 	process.env.ELECTROBUN_APP_URL || "http://localhost:5173";
 export const ELECTROBUN_SERV_URL =
 	process.env.ELECTROBUN_SERV_URL || "http://localhost:50000";
+export const ELECTROBUN_VIEW_ORIGIN = "views://mainview";

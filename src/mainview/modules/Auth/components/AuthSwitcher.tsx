@@ -21,17 +21,17 @@ export const AuthSwitcher = ({
 				<RadioGroup
 					value={value}
 					onValueChange={onChange}
-					className="flex flex-row grow border-transparent rounded-none"
+					className="flex w-full flex-row grow border-transparent rounded-none"
 				>
-					<FieldLabel htmlFor="login" className="h-9 border-transparent">
+					<FieldLabel htmlFor="login" className=" w-1/2 border-transparent">
 						<Field
 							orientation="horizontal"
 							className="w-full border-transparent"
 						>
-							<FieldContent className="w-full border-transparent">
+							<FieldContent className="w-full flex">
 								<FieldTitle
 									className={cn(
-										"w-full flex justify-center transition-colors",
+										"w-full transition-colors px-2 flex items-center justify-center rounded",
 										value === "login" ? "text-white" : "text-muted-foreground",
 									)}
 								>
@@ -41,14 +41,20 @@ export const AuthSwitcher = ({
 							<RadioGroupItem value="login" id="login" hidden />
 						</Field>
 					</FieldLabel>
-					<FieldLabel htmlFor="registration" className="h-9 w-autpfiit flex">
-						<Field orientation="horizontal" className="w-auto flex">
-							<FieldContent className="w-auto flex">
+					<FieldLabel
+						htmlFor="registration"
+						className="w-1/2 flex border-transparent"
+					>
+						<Field
+							orientation="horizontal"
+							className=" flex border-transparent"
+						>
+							<FieldContent className="w-auto flex border-transparent">
 								<FieldTitle
 									className={cn(
-										"w-full flex justify-center transition-colors",
+										"w-full transition-colors px-2 flex items-center justify-center rounded",
 										value === "registration"
-											? "text-white"
+											? "text-white "
 											: "text-muted-foreground",
 									)}
 								>

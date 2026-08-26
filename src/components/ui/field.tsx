@@ -231,7 +231,7 @@ function FieldInfo({
 	className?: string;
 }) {
 	return (
-		<>
+		<span className="text-sm">
 			{field.state.meta.isTouched && !field.state.meta.isValid ? (
 				<em className={cn("text-destructive text-sm", className)}>
 					{field.state.meta.errors.join(",")}
@@ -240,7 +240,7 @@ function FieldInfo({
 			{field.state.meta.isValidating ? (
 				<em className="text-sm">"Validating..."</em>
 			) : null}
-		</>
+		</span>
 	);
 }
 
