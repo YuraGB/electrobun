@@ -78,7 +78,7 @@ export const useExploude = () => {
 			}
 		}
 
-		const sourceCanvas = createImage(ctx) as HTMLCanvasElement;
+		const sourceCanvas = createImage(ctx);
 
 		function handleClick(e: MouseEvent) {
 			if (!canvas) return;

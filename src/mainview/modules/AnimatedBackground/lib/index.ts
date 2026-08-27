@@ -32,7 +32,7 @@ const ASSEMBLE_ROTATION_THRESHOLD = 0.001;
  */
 const PIECE_BLEED = 0.7;
 
-const createImage = (ctx?: CanvasRenderingContext2D) => {
+const createImage = (ctx: CanvasRenderingContext2D) => {
 	/**
 	 * Source image.
 	 */
