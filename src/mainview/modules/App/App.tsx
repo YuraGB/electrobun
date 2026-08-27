@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet } from "@tanstack/react-router";
-import GlobalErrorCatcher from "./GlobalErrorCatcher";
-import ExplosionCanvas from "./modules/AnimatedBackground/ComponentCanvas";
-import { ParticleBackground } from "./modules/ParticlesBackground";
+import GlobalErrorCatcher from "../../GlobalErrorCatcher";
+import ExplosionCanvas from "../AnimatedBackground/ComponentCanvas";
+import { ParticleBackground } from "../ParticlesBackground";
 
 export const queryClient = new QueryClient();
 
