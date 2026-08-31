@@ -65,6 +65,7 @@ export const LoginForm = () => {
 									Password:
 								</Label>
 								<Input
+									type="password"
 									className="text-white text-2xl"
 									id={field.name}
 									name={field.name}

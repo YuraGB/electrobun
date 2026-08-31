@@ -9,7 +9,7 @@ const IMG_Y = 100;
 const IMG_W = 400;
 const IMG_H = 400;
 
-const CELL_COUNT = 1000;
+const CELL_COUNT = 1500;
 
 const DAMPING = 0.996;
 const ROTATION_DAMPING = 0.985;
@@ -51,9 +51,7 @@ const createImage = (ctx: CanvasRenderingContext2D) => {
 
 	img.onload = () => {
 		sourceCtx.clearRect(0, 0, IMG_W, IMG_H);
-
 		sourceCtx.drawImage(img, 0, 0, IMG_W, IMG_H);
-
 		drawInitial(ctx, sourceCanvas);
 	};
 
@@ -70,9 +68,7 @@ function drawInitial(
 ) {
 	if (!ctx || !sourceCanvas) return;
 	ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
 	ctx.globalAlpha = 1;
-
 	ctx.drawImage(sourceCanvas, IMG_X, IMG_Y);
 }
 
@@ -92,9 +88,7 @@ function buildPieces(
 	}
 
 	const delaunay = Delaunay.from(points);
-
 	const voronoi = delaunay.voronoi([0, 0, IMG_W, IMG_H]);
-
 	const pieces: Piece[] = [];
 
 	for (let i = 0; i < points.length; i++) {
@@ -140,15 +134,10 @@ function buildPieces(
 		 * the polygon itself will be expanded.
 		 */
 		const textureMinX = minX - PIECE_BLEED;
-
 		const textureMinY = minY - PIECE_BLEED;
-
 		const textureMaxX = maxX + PIECE_BLEED;
-
 		const textureMaxY = maxY + PIECE_BLEED;
-
 		const width = Math.ceil(textureMaxX - textureMinX);
-
 		const height = Math.ceil(textureMaxY - textureMinY);
 
 		if (width <= 0 || height <= 0) {
@@ -184,7 +173,6 @@ function buildPieces(
 		}
 
 		centroidX /= polygon.length;
-
 		centroidY /= polygon.length;
 
 		/**
@@ -194,24 +182,17 @@ function buildPieces(
 
 		for (let j = 0; j < polygon.length; j++) {
 			const originalX = polygon[j][0];
-
 			const originalY = polygon[j][1];
-
 			const dx = originalX - centroidX;
-
 			const dy = originalY - centroidY;
-
 			const distance = Math.hypot(dx, dy) || 1;
-
 			const expandedX = originalX + (dx / distance) * PIECE_BLEED;
-
 			const expandedY = originalY + (dy / distance) * PIECE_BLEED;
 
 			/**
 			 * Convert to texture coordinates.
 			 */
 			const x = expandedX - textureMinX;
-
 			const y = expandedY - textureMinY;
 
 			if (j === 0) {
@@ -222,7 +203,6 @@ function buildPieces(
 		}
 
 		textureCtx.closePath();
-
 		textureCtx.clip();
 
 		/**
@@ -235,7 +215,6 @@ function buildPieces(
 		 * World position of texture.
 		 */
 		const pieceX = IMG_X + textureMinX;
-
 		const pieceY = IMG_Y + textureMinY;
 
 		/**
@@ -243,34 +222,22 @@ function buildPieces(
 		 * the center is based on texture size.
 		 */
 		const centerOffsetX = width / 2;
-
 		const centerOffsetY = height / 2;
-
 		const centerX = pieceX + centerOffsetX;
-
 		const centerY = pieceY + centerOffsetY;
 
 		/**
 		 * Explosion direction.
 		 */
 		const dx = centerX - clickX;
-
 		const dy = centerY - clickY;
-
 		const distance = Math.hypot(dx, dy) || 1;
-
 		const dirX = dx / distance;
-
 		const dirY = dy / distance;
-
 		const power = Math.max(0, 1 - distance / EXPLOSION_RADIUS);
-
 		const force = 0.15 + Math.pow(power, 2.5) * 4;
-
 		const randomAngle = (Math.random() - 0.5) * 0.5;
-
 		const angle = Math.atan2(dirY, dirX) + randomAngle;
-
 		const speed = force * (0.8 + Math.random() * 0.6);
 
 		pieces.push({
@@ -284,7 +251,6 @@ function buildPieces(
 			centerOffsetY,
 
 			vx: Math.cos(angle) * speed,
-
 			vy: Math.sin(angle) * speed,
 
 			rotation: 0,
